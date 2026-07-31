@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenRefreshView
 from django.contrib.auth import get_user_model
-from django.shortcuts import get_object_or_404, render, redirect
+from django.shortcuts import render, redirect
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -23,6 +23,7 @@ from core.email import send_welcome_email, send_password_reset_email
 
 User = get_user_model()
 
+# ==================== API VIEWS ====================
 
 class RegisterView(generics.CreateAPIView):
     """User registration endpoint"""
@@ -33,12 +34,8 @@ class RegisterView(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
-        
-        # Send welcome email
         send_welcome_email(user)
-        
         refresh = RefreshToken.for_user(user)
-        
         return Response({
             'message': 'User registered successfully',
             'user': UserSerializer(user).data,
@@ -60,7 +57,6 @@ class LoginView(APIView):
             context={'request': request}
         )
         serializer.is_valid(raise_exception=True)
-        
         return Response({
             'message': 'Login successful',
             'user': UserSerializer(serializer.validated_data['user']).data,
@@ -72,21 +68,19 @@ class LoginView(APIView):
 
 
 class LogoutView(APIView):
-    """User logout endpoint - blacklists refresh token"""
+    """User logout endpoint"""
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = UserLogoutSerializer
     
     def post(self, request):
         serializer = UserLogoutSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        
         UserActivityLog.objects.create(
             user=request.user,
             action='logout',
             ip_address=request.META.get('REMOTE_ADDR', ''),
             user_agent=request.META.get('HTTP_USER_AGENT', ''),
         )
-        
         return Response({
             'message': 'Logged out successfully'
         }, status=status.HTTP_200_OK)
@@ -117,11 +111,9 @@ class PasswordChangeView(generics.GenericAPIView):
             context={'request': request}
         )
         serializer.is_valid(raise_exception=True)
-        
         user = request.user
         user.set_password(serializer.validated_data['new_password'])
         user.save()
-        
         return Response({
             'message': 'Password changed successfully'
         }, status=status.HTTP_200_OK)
@@ -135,23 +127,17 @@ class PasswordResetRequestView(generics.GenericAPIView):
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        
         email = serializer.validated_data['email']
         user = User.objects.get(email=email)
-        
         token = ''.join(random.choices(string.ascii_letters + string.digits, k=50))
         user.password_reset_token = token
         user.token_created_at = timezone.now()
         user.save()
-        
         reset_link = f"https://yourdomain.com/reset-password?token={token}"
-        
-        # Send password reset email
         send_password_reset_email(user, reset_link)
-        
         return Response({
             'message': 'Password reset link sent to your email',
-            'token': token,  # In production, don't return this
+            'token': token,
             'reset_link': reset_link
         }, status=status.HTTP_200_OK)
 
@@ -164,29 +150,24 @@ class PasswordResetConfirmView(generics.GenericAPIView):
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        
         token = serializer.validated_data['token']
         new_password = serializer.validated_data['new_password']
-        
         try:
             user = User.objects.get(password_reset_token=token)
         except User.DoesNotExist:
             return Response({
                 'error': 'Invalid or expired token'
             }, status=status.HTTP_400_BAD_REQUEST)
-        
         if user.token_created_at:
             expiry_time = user.token_created_at + timezone.timedelta(hours=1)
             if timezone.now() > expiry_time:
                 return Response({
                     'error': 'Token has expired'
                 }, status=status.HTTP_400_BAD_REQUEST)
-        
         user.set_password(new_password)
         user.password_reset_token = None
         user.token_created_at = None
         user.save()
-        
         return Response({
             'message': 'Password reset successfully'
         }, status=status.HTTP_200_OK)
@@ -208,7 +189,6 @@ class UserListView(generics.ListAPIView):
     queryset = User.objects.all()
     filterset_fields = ['role', 'is_active', 'is_verified']
     search_fields = ['email', 'first_name', 'last_name', 'username']
-    ordering_fields = ['date_joined', 'last_login']
 
 
 class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -227,11 +207,12 @@ class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
         }, status=status.HTTP_200_OK)
 
 
+# ==================== TEMPLATE VIEWS ====================
+
 @login_required
 def profile_view(request):
     """User profile view"""
     user = request.user
-    
     if request.method == 'POST':
         user.first_name = request.POST.get('first_name')
         user.last_name = request.POST.get('last_name')
@@ -240,7 +221,6 @@ def profile_view(request):
         user.save()
         messages.success(request, 'Profile updated successfully!')
         return redirect('profile')
-    
     return render(request, 'accounts/profile.html', {'user': user})
 
 

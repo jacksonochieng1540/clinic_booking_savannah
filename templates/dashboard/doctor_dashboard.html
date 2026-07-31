@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+
+{% block title %}Doctor Dashboard - Clinic Booking{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3">
+            <div class="card shadow-sm mb-3">
+                <div class="card-body text-center">
+                    <i class="bi bi-person-circle display-3 text-primary"></i>
+                    <h5 class="mt-2">Dr. {{ user.get_full_name }}</h5>
+                    <p class="text-muted small">{{ doctor.specialty }}</p>
+                    <span class="badge {% if doctor.is_available %}bg-success{% else %}bg-danger{% endif %}">
+                        {% if doctor.is_available %}✅ Available{% else %}❌ Unavailable{% endif %}
+                    </span>
+                </div>
+            </div>
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="mb-0"><i class="bi bi-speedometer2"></i> Quick Actions</h6>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <i class="bi bi-calendar-check text-primary"></i> Today's Patients
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <i class="bi bi-clock text-success"></i> My Schedule
+                    </a>
+                    <a href="{% url 'profile' %}" class="list-group-item list-group-item-action">
+                        <i class="bi bi-person text-warning"></i> Edit Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <!-- Statistics -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-3 col-6">
+                    <div class="card shadow-sm text-center">
+                        <div class="card-body">
+                            <h3 class="text-primary">{{ total_appointments|default:0 }}</h3>
+                            <p class="text-muted small">Total</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="card shadow-sm text-center">
+                        <div class="card-body">
+                            <h3 class="text-success">{{ today_count|default:0 }}</h3>
+                            <p class="text-muted small">Today</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="card shadow-sm text-center">
+                        <div class="card-body">
+                            <h3 class="text-info">{{ upcoming_count|default:0 }}</h3>
+                            <p class="text-muted small">Upcoming</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="card shadow-sm text-center">
+                        <div class="card-body">
+                            <h3 class="text-warning">{{ weekly_appointments|length|default:0 }}</h3>
+                            <p class="text-muted small">This Week</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Today's Appointments -->
+            <div class="card shadow-sm">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-calendar-day text-success"></i> Today's Appointments</h5>
+                    <span class="badge bg-primary">{{ today_appointments|length }}</span>
+                </div>
+                <div class="card-body">
+                    {% if today_appointments %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Patient</th>
+                                        <th>Time</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for appointment in today_appointments %}
+                                        <tr>
+                                            <td>{{ appointment.patient.user.get_full_name }}</td>
+                                            <td>{{ appointment.start_time|time:"g:i A" }}</td>
+                                            <td><span class="badge bg-success">{{ appointment.get_status_display }}</span></td>
+                                            <td>
+                                                <a href="#" class="btn btn-sm btn-outline-primary">View</a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center py-3">
+                            <i class="bi bi-calendar2-x display-6 d-block"></i>
+                            No appointments scheduled for today.
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

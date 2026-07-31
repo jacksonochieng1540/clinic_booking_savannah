@@ -8,10 +8,7 @@ from .models import User, UserProfile, UserActivityLog
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
-        fields = [
-            'bio', 'emergency_contact_name', 'emergency_contact_phone',
-            'preferred_language', 'notifications_enabled'
-        ]
+        fields = ['bio', 'emergency_contact_name', 'emergency_contact_phone']
         read_only_fields = ['created_at', 'updated_at']
 
 
@@ -24,8 +21,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'email', 'username', 'first_name', 'last_name',
             'full_name', 'phone_number', 'role', 'date_of_birth',
-            'address', 'profile_picture', 'is_verified',
-            'date_joined', 'last_login', 'profile'
+            'address', 'is_verified', 'date_joined', 'last_login', 'profile'
         ]
         read_only_fields = ['id', 'date_joined', 'last_login', 'is_verified']
     
@@ -39,14 +35,8 @@ class UserCreateSerializer(serializers.ModelSerializer):
         required=True,
         validators=[validate_password]
     )
-    password2 = serializers.CharField(
-        write_only=True,
-        required=True
-    )
-    email = serializers.EmailField(
-        required=True,
-        validators=[EmailValidator()]
-    )
+    password2 = serializers.CharField(write_only=True, required=True)
+    email = serializers.EmailField(required=True, validators=[EmailValidator()])
     
     class Meta:
         model = User
@@ -82,16 +72,6 @@ class UserCreateSerializer(serializers.ModelSerializer):
         validated_data.pop('password2')
         user = User.objects.create_user(**validated_data)
         UserProfile.objects.create(user=user)
-        
-        request = self.context.get('request')
-        if request:
-            UserActivityLog.objects.create(
-                user=user,
-                action='register',
-                ip_address=request.META.get('REMOTE_ADDR', ''),
-                user_agent=request.META.get('HTTP_USER_AGENT', ''),
-            )
-        
         return user
 
 
@@ -104,14 +84,8 @@ class UserLoginSerializer(serializers.Serializer):
         password = attrs.get('password')
         
         if email and password:
-            try:
-                user = User.objects.get(email=email)
-            except User.DoesNotExist:
-                raise serializers.ValidationError({
-                    'error': 'Invalid email or password'
-                })
-            
-            user = authenticate(username=user.username, password=password)
+            # Authenticate using email directly (since USERNAME_FIELD = 'email')
+            user = authenticate(request=self.context.get('request'), username=email, password=password)
             
             if not user:
                 raise serializers.ValidationError({
@@ -150,12 +124,10 @@ class UserLogoutSerializer(serializers.Serializer):
     
     def validate(self, attrs):
         refresh_token = attrs.get('refresh_token')
-        
         if not refresh_token:
             raise serializers.ValidationError({
                 'error': 'Refresh token is required'
             })
-        
         try:
             token = RefreshToken(refresh_token)
             token.blacklist()
@@ -163,7 +135,6 @@ class UserLogoutSerializer(serializers.Serializer):
             raise serializers.ValidationError({
                 'error': str(e)
             })
-        
         return attrs
 
 

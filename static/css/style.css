@@ -1,0 +1,191 @@
+/* ========== MAIN STYLES ========== */
+body {
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+/* ========== CARD STYLES ========== */
+.card {
+    border: none;
+    border-radius: 12px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08) !important;
+}
+
+.card-header {
+    border-radius: 12px 12px 0 0 !important;
+}
+
+/* ========== BUTTON STYLES ========== */
+.btn-primary {
+    background: #4F46E5;
+    border-color: #4F46E5;
+}
+
+.btn-primary:hover {
+    background: #4338CA;
+    border-color: #4338CA;
+}
+
+.btn-success {
+    background: #10B981;
+    border-color: #10B981;
+}
+
+.btn-success:hover {
+    background: #059669;
+    border-color: #059669;
+}
+
+.btn-google {
+    background: #EA4335;
+    color: white;
+    border: none;
+}
+
+.btn-google:hover {
+    background: #D33426;
+    color: white;
+}
+
+/* ========== NAVBAR STYLES ========== */
+.navbar {
+    padding: 12px 0;
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.3rem;
+}
+
+.navbar .nav-link {
+    font-weight: 500;
+    padding: 8px 16px;
+}
+
+/* ========== DASHBOARD STYLES ========== */
+.stat-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.stat-card .number {
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.stat-card .label {
+    font-size: 0.85rem;
+    opacity: 0.85;
+}
+
+/* ========== APPOINTMENT SLOTS ========== */
+.slot-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 10px;
+}
+
+.slot-item {
+    padding: 10px 15px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.slot-item:hover:not(.booked) {
+    border-color: #4F46E5;
+    background: #EEF2FF;
+}
+
+.slot-item.available {
+    background: #D1FAE5;
+    border-color: #34D399;
+    color: #065F46;
+}
+
+.slot-item.booked {
+    background: #FEE2E2;
+    border-color: #F87171;
+    color: #991B1B;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.slot-item.selected {
+    border-color: #4F46E5;
+    background: #4F46E5;
+    color: white;
+}
+
+/* ========== ANIMATIONS ========== */
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.slide-up {
+    animation: slideUp 0.4s ease-out;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+    .slot-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    }
+}
+
+/* ========== MISC ========== */
+.text-gradient {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.avatar-circle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: white;
+}
+
+.avatar-sm {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+}
+
+/* Badge Colors */
+.badge-primary { background: #4F46E5; }
+.badge-success { background: #10B981; }
+.badge-danger { background: #EF4444; }
+.badge-warning { background: #F59E0B; }
+.badge-info { background: #3B82F6; }

@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard - Clinic Booking{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-speedometer2 text-primary"></i> Admin Dashboard</h2>
+        <a href="{% url 'admin:index' %}" class="btn btn-outline-primary">
+            <i class="bi bi-gear"></i> Go to Admin Panel
+        </a>
+    </div>
+    
+    <!-- Statistics -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3 col-6">
+            <div class="card shadow-sm text-center border-primary">
+                <div class="card-body">
+                    <h3 class="text-primary">{{ total_doctors|default:0 }}</h3>
+                    <p class="text-muted small"><i class="bi bi-person-badge"></i> Doctors</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="card shadow-sm text-center border-success">
+                <div class="card-body">
+                    <h3 class="text-success">{{ total_patients|default:0 }}</h3>
+                    <p class="text-muted small"><i class="bi bi-people"></i> Patients</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="card shadow-sm text-center border-info">
+                <div class="card-body">
+                    <h3 class="text-info">{{ total_appointments|default:0 }}</h3>
+                    <p class="text-muted small"><i class="bi bi-calendar"></i> Appointments</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="card shadow-sm text-center border-warning">
+                <div class="card-body">
+                    <h3 class="text-warning">{{ today_appointments|default:0 }}</h3>
+                    <p class="text-muted small"><i class="bi bi-calendar-day"></i> Today</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Appointment Status -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h6 class="fw-bold"><i class="bi bi-pie-chart"></i> Status Breakdown</h6>
+                    <div class="d-flex justify-content-between">
+                        <span>Scheduled: <strong class="text-primary">{{ upcoming_appointments|default:0 }}</strong></span>
+                        <span>Completed: <strong class="text-success">{{ completed_appointments|default:0 }}</strong></span>
+                        <span>Cancelled: <strong class="text-danger">{{ cancelled_appointments|default:0 }}</strong></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h6 class="fw-bold"><i class="bi bi-calendar-month"></i> Monthly Activity</h6>
+                    <p class="mb-0">Appointments this month: <strong>{{ monthly_appointments|default:0 }}</strong></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h6 class="fw-bold"><i class="bi bi-lightning"></i> Quick Actions</h6>
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'admin:index' %}" class="btn btn-primary btn-sm">
+                            <i class="bi bi-gear"></i> Admin Panel
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Appointments -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">
+            <h5 class="mb-0"><i class="bi bi-clock-history text-info"></i> Recent Appointments</h5>
+        </div>
+        <div class="card-body">
+            {% if recent_appointments %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Patient</th>
+                                <th>Doctor</th>
+                                <th>Date & Time</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for appointment in recent_appointments %}
+                                <tr>
+                                    <td>{{ appointment.patient.user.get_full_name }}</td>
+                                    <td>Dr. {{ appointment.doctor.user.get_full_name }}</td>
+                                    <td>{{ appointment.start_time|date:"M d, Y g:i A" }}</td>
+                                    <td>
+                                        <span class="badge {% if appointment.status == 'scheduled' %}bg-primary{% elif appointment.status == 'completed' %}bg-success{% elif appointment.status == 'cancelled' %}bg-danger{% else %}bg-secondary{% endif %}">
+                                            {{ appointment.get_status_display }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-muted text-center">No recent appointments</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Recent Users -->
+    <div class="card shadow-sm">
+        <div class="card-header">
+            <h5 class="mb-0"><i class="bi bi-people text-primary"></i> Recent Users</h5>
+        </div>
+        <div class="card-body">
+            {% if recent_users %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Joined</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in recent_users %}
+                                <tr>
+                                    <td>{{ user.get_full_name }}</td>
+                                    <td>{{ user.email }}</td>
+                                    <td><span class="badge bg-info">{{ user.get_role_display }}</span></td>
+                                    <td>{{ user.date_joined|date:"M d, Y" }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-muted text-center">No recent users</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
