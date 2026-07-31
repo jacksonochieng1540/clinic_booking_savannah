@@ -215,8 +215,8 @@ AUTH_USER_MODEL = 'accounts.User'
 # }
 
 # # Crispy Forms
-# CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
-# CRISPY_TEMPLATE_PACK = "bootstrap5"
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 # REST Framework Configuration
 REST_FRAMEWORK = {
