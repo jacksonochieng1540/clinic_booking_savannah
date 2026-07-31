@@ -1,19 +1,19 @@
 from django.db import models
+
 from doctors.models import Doctor
+
 
 class WorkingHours(models.Model):
     DAYS_OF_WEEK = [
-        ('monday', 'Monday'),
-        ('tuesday', 'Tuesday'),
-        ('wednesday', 'Wednesday'),
-        ('thursday', 'Thursday'),
-        ('friday', 'Friday'),
+        ("monday", "Monday"),
+        ("tuesday", "Tuesday"),
+        ("wednesday", "Wednesday"),
+        ("thursday", "Thursday"),
+        ("friday", "Friday"),
     ]
-    
+
     doctor = models.ForeignKey(
-        Doctor, 
-        on_delete=models.CASCADE, 
-        related_name='working_hours'
+        Doctor, on_delete=models.CASCADE, related_name="working_hours"
     )
     day_of_week = models.CharField(max_length=10, choices=DAYS_OF_WEEK)
     start_time = models.TimeField()
@@ -23,10 +23,10 @@ class WorkingHours(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ['day_of_week', 'start_time']
-        unique_together = ['doctor', 'day_of_week']
+        ordering = ["day_of_week", "start_time"]
+        unique_together = ["doctor", "day_of_week"]
         indexes = [
-            models.Index(fields=['doctor', 'day_of_week', 'is_available']),
+            models.Index(fields=["doctor", "day_of_week", "is_available"]),
         ]
 
     def __str__(self):

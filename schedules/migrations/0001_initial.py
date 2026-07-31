@@ -9,26 +9,58 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('doctors', '0001_initial'),
+        ("doctors", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='WorkingHours',
+            name="WorkingHours",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('day_of_week', models.CharField(choices=[('monday', 'Monday'), ('tuesday', 'Tuesday'), ('wednesday', 'Wednesday'), ('thursday', 'Thursday'), ('friday', 'Friday')], max_length=10)),
-                ('start_time', models.TimeField()),
-                ('end_time', models.TimeField()),
-                ('is_available', models.BooleanField(default=True)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('doctor', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='working_hours', to='doctors.doctor')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "day_of_week",
+                    models.CharField(
+                        choices=[
+                            ("monday", "Monday"),
+                            ("tuesday", "Tuesday"),
+                            ("wednesday", "Wednesday"),
+                            ("thursday", "Thursday"),
+                            ("friday", "Friday"),
+                        ],
+                        max_length=10,
+                    ),
+                ),
+                ("start_time", models.TimeField()),
+                ("end_time", models.TimeField()),
+                ("is_available", models.BooleanField(default=True)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "doctor",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="working_hours",
+                        to="doctors.doctor",
+                    ),
+                ),
             ],
             options={
-                'ordering': ['day_of_week', 'start_time'],
-                'indexes': [models.Index(fields=['doctor', 'day_of_week', 'is_available'], name='schedules_w_doctor__ef6ffe_idx')],
-                'unique_together': {('doctor', 'day_of_week')},
+                "ordering": ["day_of_week", "start_time"],
+                "indexes": [
+                    models.Index(
+                        fields=["doctor", "day_of_week", "is_available"],
+                        name="schedules_w_doctor__ef6ffe_idx",
+                    )
+                ],
+                "unique_together": {("doctor", "day_of_week")},
             },
         ),
     ]

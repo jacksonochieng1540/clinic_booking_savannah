@@ -9,28 +9,75 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('doctors', '0001_initial'),
-        ('patients', '0001_initial'),
+        ("doctors", "0001_initial"),
+        ("patients", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Appointment',
+            name="Appointment",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('start_time', models.DateTimeField()),
-                ('end_time', models.DateTimeField()),
-                ('status', models.CharField(choices=[('scheduled', 'Scheduled'), ('confirmed', 'Confirmed'), ('cancelled', 'Cancelled'), ('completed', 'Completed'), ('no_show', 'No Show')], default='scheduled', max_length=20)),
-                ('cancellation_reason', models.TextField(blank=True, null=True)),
-                ('notes', models.TextField(blank=True, null=True)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('doctor', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='appointments', to='doctors.doctor')),
-                ('patient', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='appointments', to='patients.patient')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("start_time", models.DateTimeField()),
+                ("end_time", models.DateTimeField()),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("scheduled", "Scheduled"),
+                            ("confirmed", "Confirmed"),
+                            ("cancelled", "Cancelled"),
+                            ("completed", "Completed"),
+                            ("no_show", "No Show"),
+                        ],
+                        default="scheduled",
+                        max_length=20,
+                    ),
+                ),
+                ("cancellation_reason", models.TextField(blank=True, null=True)),
+                ("notes", models.TextField(blank=True, null=True)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "doctor",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="appointments",
+                        to="doctors.doctor",
+                    ),
+                ),
+                (
+                    "patient",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="appointments",
+                        to="patients.patient",
+                    ),
+                ),
             ],
             options={
-                'ordering': ['start_time'],
-                'indexes': [models.Index(fields=['doctor', 'start_time', 'status'], name='appointment_doctor__23f8ac_idx'), models.Index(fields=['patient', 'start_time'], name='appointment_patient_fbd73b_idx'), models.Index(fields=['status'], name='appointment_status_8fe9d7_idx')],
+                "ordering": ["start_time"],
+                "indexes": [
+                    models.Index(
+                        fields=["doctor", "start_time", "status"],
+                        name="appointment_doctor__23f8ac_idx",
+                    ),
+                    models.Index(
+                        fields=["patient", "start_time"],
+                        name="appointment_patient_fbd73b_idx",
+                    ),
+                    models.Index(
+                        fields=["status"], name="appointment_status_8fe9d7_idx"
+                    ),
+                ],
             },
         ),
     ]

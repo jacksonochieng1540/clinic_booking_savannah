@@ -1,12 +1,14 @@
-from django.db import models
 from django.conf import settings
+from django.db import models
+
 
 class Patient(models.Model):
     """Patient model"""
+
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name='patient_profile'
+        related_name="patient_profile",
     )
     blood_type = models.CharField(max_length=5, blank=True, null=True)
     allergies = models.TextField(blank=True, null=True)
@@ -15,9 +17,9 @@ class Patient(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ['user__first_name', 'user__last_name']
+        ordering = ["user__first_name", "user__last_name"]
         indexes = [
-            models.Index(fields=['user']),
+            models.Index(fields=["user"]),
         ]
 
     def __str__(self):

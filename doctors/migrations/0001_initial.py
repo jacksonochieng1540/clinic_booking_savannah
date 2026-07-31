@@ -15,22 +15,47 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Doctor',
+            name="Doctor",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('specialty', models.CharField(max_length=100)),
-                ('license_number', models.CharField(max_length=50, unique=True)),
-                ('years_of_experience', models.IntegerField(default=0)),
-                ('bio', models.TextField(blank=True, null=True)),
-                ('consultation_fee', models.DecimalField(decimal_places=2, default=0, max_digits=10)),
-                ('is_available', models.BooleanField(default=True)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='doctor_profile', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("specialty", models.CharField(max_length=100)),
+                ("license_number", models.CharField(max_length=50, unique=True)),
+                ("years_of_experience", models.IntegerField(default=0)),
+                ("bio", models.TextField(blank=True, null=True)),
+                (
+                    "consultation_fee",
+                    models.DecimalField(decimal_places=2, default=0, max_digits=10),
+                ),
+                ("is_available", models.BooleanField(default=True)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "user",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="doctor_profile",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'ordering': ['user__first_name', 'user__last_name'],
-                'indexes': [models.Index(fields=['specialty'], name='doctors_doc_special_4b2702_idx'), models.Index(fields=['is_available'], name='doctors_doc_is_avai_e473c5_idx')],
+                "ordering": ["user__first_name", "user__last_name"],
+                "indexes": [
+                    models.Index(
+                        fields=["specialty"], name="doctors_doc_special_4b2702_idx"
+                    ),
+                    models.Index(
+                        fields=["is_available"], name="doctors_doc_is_avai_e473c5_idx"
+                    ),
+                ],
             },
         ),
     ]

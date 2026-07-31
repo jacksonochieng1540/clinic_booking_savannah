@@ -15,19 +15,36 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Patient',
+            name="Patient",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('blood_type', models.CharField(blank=True, max_length=5, null=True)),
-                ('allergies', models.TextField(blank=True, null=True)),
-                ('medical_history', models.TextField(blank=True, null=True)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='patient_profile', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("blood_type", models.CharField(blank=True, max_length=5, null=True)),
+                ("allergies", models.TextField(blank=True, null=True)),
+                ("medical_history", models.TextField(blank=True, null=True)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "user",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="patient_profile",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'ordering': ['user__first_name', 'user__last_name'],
-                'indexes': [models.Index(fields=['user'], name='patients_pa_user_id_b78fa3_idx')],
+                "ordering": ["user__first_name", "user__last_name"],
+                "indexes": [
+                    models.Index(fields=["user"], name="patients_pa_user_id_b78fa3_idx")
+                ],
             },
         ),
     ]
