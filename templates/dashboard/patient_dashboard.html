@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+
+{% block title %}Patient Dashboard - Clinic Booking{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3">
+            <div class="card shadow-sm mb-3">
+                <div class="card-body text-center">
+                    <i class="bi bi-person-circle display-3 text-primary"></i>
+                    <h5 class="mt-2">{{ user.get_full_name }}</h5>
+                    <p class="text-muted small">{{ user.email }}</p>
+                    <span class="badge bg-info">{{ user.get_role_display }}</span>
+                </div>
+            </div>
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="mb-0"><i class="bi bi-speedometer2"></i> Quick Actions</h6>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <i class="bi bi-plus-circle text-success"></i> Book Appointment
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <i class="bi bi-calendar text-primary"></i> My Appointments
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <i class="bi bi-search text-info"></i> Find Doctor
+                    </a>
+                    <a href="{% url 'profile' %}" class="list-group-item list-group-item-action">
+                        <i class="bi bi-person text-warning"></i> Edit Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <!-- Statistics -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-3 col-6">
+                    <div class="card shadow-sm text-center">
+                        <div class="card-body">
+                            <h3 class="text-primary">{{ total_appointments|default:0 }}</h3>
+                            <p class="text-muted small">Total</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="card shadow-sm text-center">
+                        <div class="card-body">
+                            <h3 class="text-success">{{ upcoming_count|default:0 }}</h3>
+                            <p class="text-muted small">Upcoming</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="card shadow-sm text-center">
+                        <div class="card-body">
+                            <h3 class="text-info">{{ completed_appointments|default:0 }}</h3>
+                            <p class="text-muted small">Completed</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="card shadow-sm text-center">
+                        <div class="card-body">
+                            <h3 class="text-danger">{{ cancelled_appointments|default:0 }}</h3>
+                            <p class="text-muted small">Cancelled</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upcoming Appointments -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-calendar-event text-primary"></i> Upcoming Appointments</h5>
+                    <span class="badge bg-primary">{{ upcoming_appointments|length }}</span>
+                </div>
+                <div class="card-body">
+                    {% if upcoming_appointments %}
+                        <div class="list-group">
+                            {% for appointment in upcoming_appointments %}
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">Dr. {{ appointment.doctor.user.get_full_name }}</h6>
+                                        <small class="text-muted">
+                                            <i class="bi bi-calendar"></i> {{ appointment.start_time|date:"M d, Y" }}
+                                            <i class="bi bi-clock ms-2"></i> {{ appointment.start_time|time:"g:i A" }}
+                                        </small>
+                                    </div>
+                                    <span class="badge bg-success">{{ appointment.get_status_display }}</span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center py-3">
+                            <i class="bi bi-calendar2-check display-6 d-block"></i>
+                            No upcoming appointments. <a href="#">Book one now!</a>
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Recent Doctors -->
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-heart-pulse text-danger"></i> Recent Doctors</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_doctors %}
+                        <div class="row g-3">
+                            {% for doctor in recent_doctors %}
+                                <div class="col-md-4">
+                                    <div class="d-flex align-items-center p-2 border rounded">
+                                        <i class="bi bi-person-circle fs-1 me-2 text-primary"></i>
+                                        <div>
+                                            <h6 class="mb-0">Dr. {{ doctor.user.get_full_name }}</h6>
+                                            <small class="text-muted">{{ doctor.specialty }}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center">No recent doctors.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

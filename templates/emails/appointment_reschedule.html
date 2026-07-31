@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #FF9800; color: white; padding: 20px; text-align: center; border-radius: 5px 5px 0 0; }
+        .content { padding: 30px; background: #f9f9f9; }
+        .info { background: #fff3e0; padding: 15px; border-radius: 5px; margin: 15px 0; }
+        .footer { text-align: center; padding: 20px; font-size: 12px; color: #777; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1> Appointment Rescheduled</h1>
+        </div>
+        <div class="content">
+            <h2>Hello {{ patient_name }},</h2>
+            <p>Your appointment has been <strong>rescheduled</strong>.</p>
+            
+            <div class="info">
+                <p><strong> Doctor:</strong> {{ doctor_name }}</p>
+                <p><strong> Old Date:</strong> {{ old_date }} at {{ old_time }}</p>
+                <p><strong> New Date:</strong> {{ new_date }} at {{ new_time }}</p>
+            </div>
+            
+            <p>Please arrive 10 minutes before your new appointment time.</p>
+        </div>
+        <div class="footer">
+            <p>&copy; {% now "Y" %} Clinic Booking System</p>
+        </div>
+    </div>
+</body>
+</html>

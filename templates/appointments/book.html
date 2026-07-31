@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block title %}Book Appointment - Clinic Booking{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h2><i class="bi bi-plus-circle text-primary"></i> Book Appointment</h2>
+    <hr>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <form id="bookAppointmentForm">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="doctor" class="form-label">Select Doctor</label>
+                            <select id="doctor" class="form-select" required>
+                                <option value="">Choose a doctor...</option>
+                                <!-- Populated from API -->
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="date" class="form-label">Select Date</label>
+                            <input type="date" id="date" class="form-control" required>
+                        </div>
+                        <div class="mb-3" id="slotsContainer">
+                            <label class="form-label">Available Time Slots</label>
+                            <div id="slotsGrid" class="slot-grid">
+                                <p class="text-muted">Select a doctor and date first</p>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-check-circle"></i> Book Appointment
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <i class="bi bi-info-circle display-4 text-info"></i>
+                    <h5>Booking Tips</h5>
+                    <ul class="text-start">
+                        <li>Appointments are 30 minutes long</li>
+                        <li>Book at least 1 hour in advance</li>
+                        <li>You'll receive a confirmation email</li>
+                        <li>Cancel or reschedule if needed</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Load doctors
+    $.get('/doctors/api/', function(data) {
+        var select = $('#doctor');
+        select.append('<option value="">Choose a doctor...</option>');
+        data.forEach(function(doctor) {
+            select.append(`<option value="${doctor.id}">Dr. ${doctor.name} - ${doctor.specialty}</option>`);
+        });
+    });
+    
+    // Check availability on doctor/date change
+    function checkAvailability() {
+        var doctorId = $('#doctor').val();
+        var date = $('#date').val();
+        
+        if (doctorId && date) {
+            $.get(`/schedules/api/doctors/${doctorId}/availability/?date=${date}`, function(data) {
+                var grid = $('#slotsGrid');
+                if (data.available_slots.length === 0) {
+                    grid.html('<p class="text-muted">No available slots for this date</p>');
+                } else {
+                    var html = '';
+                    data.available_slots.forEach(function(slot) {
+                        html += `
+                            <div class="slot-item available" onclick="selectSlot(this)" data-time="${slot.start_time}">
+                                ${new Date(slot.start_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                            </div>
+                        `;
+                    });
+                    grid.html(html);
+                }
+            });
+        }
+    }
+    
+    $('#doctor, #date').on('change', checkAvailability);
+});
+</script>
+{% endblock %}

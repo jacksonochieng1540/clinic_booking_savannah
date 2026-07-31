@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Welcome - Clinic Booking System{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row min-vh-75 align-items-center">
+        <div class="col-lg-6">
+            <h1 class="display-4 fw-bold text-primary">🏥 Clinic Booking System</h1>
+            <p class="lead mt-3">Book appointments with our experienced doctors easily and quickly.</p>
+            <p class="text-muted">Choose your doctor, pick a time, and get confirmed instantly.</p>
+            
+            <div class="mt-4">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'dashboard' %}" class="btn btn-primary btn-lg me-2">
+                        <i class="bi bi-speedometer2"></i> Go to Dashboard
+                    </a>
+                    <a href="{% url 'admin:index' %}" class="btn btn-outline-secondary btn-lg">
+                        <i class="bi bi-gear"></i> Admin
+                    </a>
+                {% else %}
+                    <a href="{% url 'api-register' %}" class="btn btn-success btn-lg me-2">
+                        <i class="bi bi-person-plus"></i> Get Started
+                    </a>
+                    <a href="{% url 'api-login' %}" class="btn btn-primary btn-lg">
+                        <i class="bi bi-box-arrow-in-right"></i> Login
+                    </a>
+                {% endif %}
+            </div>
+            
+            <div class="mt-5">
+                <div class="row g-3">
+                    <div class="col-sm-4">
+                        <div class="text-center">
+                            <i class="bi bi-calendar-check display-6 text-primary"></i>
+                            <p class="mb-0"><strong>Easy Booking</strong></p>
+                            <small class="text-muted">Book in 30-second slots</small>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="text-center">
+                            <i class="bi bi-clock display-6 text-success"></i>
+                            <p class="mb-0"><strong>Flexible Hours</strong></p>
+                            <small class="text-muted">Choose your preferred time</small>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="text-center">
+                            <i class="bi bi-shield-check display-6 text-info"></i>
+                            <p class="mb-0"><strong>Secure</strong></p>
+                            <small class="text-muted">Your data is safe with us</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 text-center d-none d-lg-block">
+            <img src="{% static 'images/doctor-illustration.svg' %}" alt="Doctor Illustration" class="img-fluid" style="max-height: 400px;">
+        </div>
+    </div>
+</div>
+{% endblock %}

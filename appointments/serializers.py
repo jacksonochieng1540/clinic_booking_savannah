@@ -6,7 +6,7 @@ from patients.serializers import PatientSerializer
 
 class AppointmentSerializer(serializers.ModelSerializer):
     patient_name = serializers.CharField(source='patient.name', read_only=True)
-    doctor_name = serializers.CharField(source='doctor.name', read_only=True)
+    doctor_name = serializers.SerializerMethodField()  # ← Change this
     patient_details = PatientSerializer(source='patient', read_only=True)
     doctor_details = DoctorListSerializer(source='doctor', read_only=True)
     
@@ -20,6 +20,10 @@ class AppointmentSerializer(serializers.ModelSerializer):
             'created_at', 'updated_at'
         ]
         read_only_fields = ['status', 'cancellation_reason', 'created_at', 'updated_at']
+    
+    def get_doctor_name(self, obj):
+        """Return doctor name with Dr. prefix"""
+        return f"Dr. {obj.doctor.user.get_full_name()}"
 
 class AppointmentCreateSerializer(serializers.Serializer):
     patient_id = serializers.IntegerField()
