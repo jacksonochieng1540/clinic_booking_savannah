@@ -1,6 +1,6 @@
 from rest_framework import serializers
+from django.core.exceptions import ValidationError as DjangoValidationError
 from django.utils import timezone
-from django.core.exceptions import ValidationError as DjangoValidationError  # ADD THIS
 from .models import Appointment
 from doctors.serializers import DoctorListSerializer
 from patients.serializers import PatientSerializer
