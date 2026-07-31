@@ -10,6 +10,11 @@ from .serializers import (
     AppointmentListSerializer
 )
 from core.permissions import IsPatientUser, IsDoctorUser, IsAdminUser
+from core.email import (
+    send_appointment_confirmation_email,
+    send_appointment_cancellation_email,
+    send_appointment_reschedule_email
+)
 
 class AppointmentCreateView(generics.CreateAPIView):
     """Create a new appointment"""
@@ -20,6 +25,10 @@ class AppointmentCreateView(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         appointment = serializer.save()
+        
+        # Send confirmation email
+        send_appointment_confirmation_email(appointment)
+        
         return Response(
             AppointmentSerializer(appointment).data,
             status=status.HTTP_201_CREATED
@@ -43,6 +52,9 @@ class AppointmentCancelView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         
         appointment.cancel(reason=serializer.validated_data.get('reason'))
+        
+        # Send cancellation email
+        send_appointment_cancellation_email(appointment)
         
         return Response(
             {
@@ -70,7 +82,10 @@ class AppointmentRescheduleView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         
         new_start_time = serializer.validated_data['new_start_time']
-        appointment.reschedule(new_start_time)
+        old_time = appointment.reschedule(new_start_time)
+        
+        # Send reschedule email
+        send_appointment_reschedule_email(appointment, old_time)
         
         return Response(
             {
