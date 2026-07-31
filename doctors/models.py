@@ -1,12 +1,14 @@
-from django.db import models
 from django.conf import settings
+from django.db import models
+
 
 class Doctor(models.Model):
     """Doctor model"""
+
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name='doctor_profile'
+        related_name="doctor_profile",
     )
     specialty = models.CharField(max_length=100)
     license_number = models.CharField(max_length=50, unique=True)
@@ -18,10 +20,10 @@ class Doctor(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ['user__first_name', 'user__last_name']
+        ordering = ["user__first_name", "user__last_name"]
         indexes = [
-            models.Index(fields=['specialty']),
-            models.Index(fields=['is_available']),
+            models.Index(fields=["specialty"]),
+            models.Index(fields=["is_available"]),
         ]
 
     def __str__(self):
