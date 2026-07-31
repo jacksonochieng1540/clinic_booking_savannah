@@ -8,8 +8,7 @@ from rest_framework.exceptions import ErrorDetail
 from rest_framework.test import APIClient
 
 from .exceptions import custom_exception_handler
-from .permissions import (IsAdminUser, IsDoctorOrAdmin, IsDoctorUser,
-                          IsPatientUser)
+from .permissions import IsAdminUser, IsDoctorOrAdmin, IsDoctorUser, IsPatientUser
 from .utils import generate_time_slots, validate_appointment_time
 
 

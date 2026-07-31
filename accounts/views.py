@@ -16,13 +16,19 @@ from core.email import send_password_reset_email, send_welcome_email
 from core.permissions import IsAdminUser
 
 from .models import UserActivityLog
-from .serializers import (PasswordChangeSerializer,
-                          PasswordResetConfirmSerializer,
-                          PasswordResetSerializer, UserActivityLogSerializer,
-                          UserCreateSerializer, UserLoginSerializer,
-                          UserLogoutSerializer, UserSerializer)
+from .serializers import (
+    PasswordChangeSerializer,
+    PasswordResetConfirmSerializer,
+    PasswordResetSerializer,
+    UserActivityLogSerializer,
+    UserCreateSerializer,
+    UserLoginSerializer,
+    UserLogoutSerializer,
+    UserSerializer,
+)
 
 User = get_user_model()
+
 
 class RegisterView(generics.CreateAPIView):
     """User registration endpoint"""

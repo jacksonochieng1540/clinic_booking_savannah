@@ -5,17 +5,21 @@ from rest_framework import generics, status
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
-from core.email import (send_appointment_cancellation_email,
-                        send_appointment_confirmation_email,
-                        send_appointment_reschedule_email)
+from core.email import (
+    send_appointment_cancellation_email,
+    send_appointment_confirmation_email,
+    send_appointment_reschedule_email,
+)
 from core.permissions import IsAdminUser, IsDoctorUser, IsPatientUser
 
 from .models import Appointment
-from .serializers import (AppointmentCancelSerializer,
-                          AppointmentCreateSerializer,
-                          AppointmentListSerializer,
-                          AppointmentRescheduleSerializer,
-                          AppointmentSerializer)
+from .serializers import (
+    AppointmentCancelSerializer,
+    AppointmentCreateSerializer,
+    AppointmentListSerializer,
+    AppointmentRescheduleSerializer,
+    AppointmentSerializer,
+)
 
 
 def _error_message(exc):
