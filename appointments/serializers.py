@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.core.exceptions import ValidationError as DjangoValidationError
 from django.utils import timezone
 from .models import Appointment
 from doctors.serializers import DoctorListSerializer
@@ -78,13 +79,16 @@ class AppointmentCreateSerializer(serializers.Serializer):
         return data
     
     def create(self, validated_data):
-        return Appointment.objects.create(
-            patient=validated_data['patient'],
-            doctor=validated_data['doctor'],
-            start_time=validated_data['start_time'],
-            end_time=validated_data['end_time'],
-            notes=validated_data.get('notes', '')
-        )
+        try:
+            return Appointment.objects.create(
+                patient=validated_data['patient'],
+                doctor=validated_data['doctor'],
+                start_time=validated_data['start_time'],
+                end_time=validated_data['end_time'],
+                notes=validated_data.get('notes', '')
+            )
+        except DjangoValidationError as exc:
+            raise serializers.ValidationError(exc.messages)
 
 class AppointmentCancelSerializer(serializers.Serializer):
     reason = serializers.CharField(required=False, allow_blank=True)

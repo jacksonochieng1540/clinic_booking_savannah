@@ -1,5 +1,6 @@
 from rest_framework import generics, status
 from rest_framework.response import Response
+from django.core.exceptions import ValidationError as DjangoValidationError
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 
@@ -15,6 +16,12 @@ from core.email import (
     send_appointment_cancellation_email,
     send_appointment_reschedule_email
 )
+
+def _error_message(exc):
+    """Flatten an exception raised by appointment business rules to a string"""
+    if isinstance(exc, DjangoValidationError):
+        return '; '.join(exc.messages)
+    return str(exc)
 
 class AppointmentCreateView(generics.CreateAPIView):
     """Create a new appointment"""
@@ -51,7 +58,13 @@ class AppointmentCancelView(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         
-        appointment.cancel(reason=serializer.validated_data.get('reason'))
+        try:
+            appointment.cancel(reason=serializer.validated_data.get('reason'))
+        except (ValueError, DjangoValidationError) as exc:
+            return Response(
+                {'error': _error_message(exc)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         
         # Send cancellation email
         send_appointment_cancellation_email(appointment)
@@ -82,7 +95,13 @@ class AppointmentRescheduleView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         
         new_start_time = serializer.validated_data['new_start_time']
-        old_time = appointment.reschedule(new_start_time)
+        try:
+            old_time = appointment.reschedule(new_start_time)
+        except (ValueError, DjangoValidationError) as exc:
+            return Response(
+                {'error': _error_message(exc)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         
         # Send reschedule email
         send_appointment_reschedule_email(appointment, old_time)

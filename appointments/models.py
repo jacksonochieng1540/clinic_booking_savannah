@@ -55,6 +55,11 @@ class Appointment(models.Model):
         if self.start_time < timezone.now():
             raise ValidationError('Cannot book in the past')
         
+        if self.start_time < timezone.now() + timezone.timedelta(hours=1):
+            raise ValidationError(
+                'Bookings must be made at least 1 hour in advance'
+            )
+        
         day_name = self.start_time.strftime('%A').lower()
         working_hours = WorkingHours.objects.filter(
             doctor=self.doctor,
@@ -96,11 +101,6 @@ class Appointment(models.Model):
         
         if conflict_check.exists():
             raise ValidationError('This time slot is already booked')
-        
-        if self.start_time < timezone.now() + timezone.timedelta(hours=1):
-            raise ValidationError(
-                'Bookings must be made at least 1 hour in advance'
-            )
 
     def save(self, *args, **kwargs):
         self.full_clean()
