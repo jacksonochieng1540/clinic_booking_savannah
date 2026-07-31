@@ -2,14 +2,12 @@ from django.db import models
 from doctors.models import Doctor
 
 class WorkingHours(models.Model):
-    """Doctor's working hours schedule"""
     DAYS_OF_WEEK = [
         ('monday', 'Monday'),
         ('tuesday', 'Tuesday'),
         ('wednesday', 'Wednesday'),
         ('thursday', 'Thursday'),
         ('friday', 'Friday'),
-
     ]
     
     doctor = models.ForeignKey(
