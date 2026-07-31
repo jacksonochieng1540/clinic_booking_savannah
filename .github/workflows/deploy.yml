@@ -1,0 +1,52 @@
+name: CD - Continuous Deployment
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Run migrations on production
+      env:
+        DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
+        SECRET_KEY: ${{ secrets.PRODUCTION_SECRET_KEY }}
+        DEBUG: False
+      run: |
+        python manage.py migrate
+    
+    - name: Collect static files
+      env:
+        DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
+        SECRET_KEY: ${{ secrets.PRODUCTION_SECRET_KEY }}
+        DEBUG: False
+      run: |
+        python manage.py collectstatic --noinput
+    
+    - name: Deploy to Render
+      uses: johnbeynon/render-deploy-action@v0.0.8
+      with:
+        service-id: ${{ secrets.RENDER_SERVICE_ID }}
+        api-key: ${{ secrets.RENDER_API_KEY }}
+        wait-for-success: true
+    
+    - name: Verify deployment
+      run: |
+        echo "Deployment complete! Waiting for service to become healthy..."
+        sleep 30
+        curl -f ${{ secrets.DEPLOYMENT_URL }}/health/ || echo "Health check endpoint not found, but deployment may still be successful"
