@@ -1,12 +1,13 @@
 from rest_framework import serializers
 from django.utils import timezone
+from django.core.exceptions import ValidationError as DjangoValidationError  # ADD THIS
 from .models import Appointment
 from doctors.serializers import DoctorListSerializer
 from patients.serializers import PatientSerializer
 
 class AppointmentSerializer(serializers.ModelSerializer):
     patient_name = serializers.CharField(source='patient.name', read_only=True)
-    doctor_name = serializers.SerializerMethodField()  # ← Change this
+    doctor_name = serializers.SerializerMethodField()
     patient_details = PatientSerializer(source='patient', read_only=True)
     doctor_details = DoctorListSerializer(source='doctor', read_only=True)
     
@@ -22,7 +23,6 @@ class AppointmentSerializer(serializers.ModelSerializer):
         read_only_fields = ['status', 'cancellation_reason', 'created_at', 'updated_at']
     
     def get_doctor_name(self, obj):
-        """Return doctor name with Dr. prefix"""
         return f"Dr. {obj.doctor.user.get_full_name()}"
 
 class AppointmentCreateSerializer(serializers.Serializer):
@@ -78,13 +78,16 @@ class AppointmentCreateSerializer(serializers.Serializer):
         return data
     
     def create(self, validated_data):
-        return Appointment.objects.create(
-            patient=validated_data['patient'],
-            doctor=validated_data['doctor'],
-            start_time=validated_data['start_time'],
-            end_time=validated_data['end_time'],
-            notes=validated_data.get('notes', '')
-        )
+        try:
+            return Appointment.objects.create(
+                patient=validated_data['patient'],
+                doctor=validated_data['doctor'],
+                start_time=validated_data['start_time'],
+                end_time=validated_data['end_time'],
+                notes=validated_data.get('notes', '')
+            )
+        except DjangoValidationError as exc:
+            raise serializers.ValidationError(detail=exc.message_dict)
 
 class AppointmentCancelSerializer(serializers.Serializer):
     reason = serializers.CharField(required=False, allow_blank=True)
