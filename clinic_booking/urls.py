@@ -19,7 +19,9 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from django.views.generic import TemplateView
-from accounts.views import home_view, dashboard_view
+from accounts.views import home_view
+from accounts.views_dashboard import dashboard_view  # ← CHANGE THIS LINE
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),

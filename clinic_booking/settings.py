@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'doctors',
     'patients',
     'schedules',
+    'core',
 
     #third party applications
     'rest_framework',
