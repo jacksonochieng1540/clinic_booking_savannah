@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from .models import WorkingHours
-from doctors.serializers import DoctorListSerializer
 
 class WorkingHoursSerializer(serializers.ModelSerializer):
     doctor_name = serializers.CharField(source='doctor.name', read_only=True)
