@@ -1,32 +1,26 @@
-import random
-import string
-
-from django.contrib import messages
-from django.contrib.auth import get_user_model
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect, render
-from django.utils import timezone
-from rest_framework import generics, permissions, status
+from rest_framework import generics, status, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenRefreshView
-
-from core.email import send_password_reset_email, send_welcome_email
-from core.permissions import IsAdminUser
-
-from .models import UserActivityLog
+from django.contrib.auth import get_user_model
+from django.shortcuts import render, redirect
+from django.utils import timezone
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+import random
+import string
+ 
 from .serializers import (
-    PasswordChangeSerializer,
-    PasswordResetConfirmSerializer,
-    PasswordResetSerializer,
-    UserActivityLogSerializer,
-    UserCreateSerializer,
-    UserLoginSerializer,
-    UserLogoutSerializer,
-    UserSerializer,
+    UserSerializer, UserCreateSerializer, UserLoginSerializer,
+    UserLogoutSerializer, PasswordChangeSerializer,
+    PasswordResetSerializer, PasswordResetConfirmSerializer,
+    UserActivityLogSerializer
 )
-
+from .models import UserActivityLog
+from core.permissions import IsAdminUser
+from core.email import send_welcome_email, send_password_reset_email
+ 
 User = get_user_model()
 
 
