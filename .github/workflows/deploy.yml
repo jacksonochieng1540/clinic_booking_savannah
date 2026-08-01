@@ -24,16 +24,16 @@ jobs:
 
     - name: Run migrations on production
       env:
-        DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
-        SECRET_KEY: ${{ secrets.PRODUCTION_SECRET_KEY }}
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        SECRET_KEY: ${{ secrets.SECRET_KEY }}
         DEBUG: False
       run: |
         python manage.py migrate
 
     - name: Collect static files
       env:
-        DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
-        SECRET_KEY: ${{ secrets.PRODUCTION_SECRET_KEY }}
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        SECRET_KEY: ${{ secrets.SECRET_KEY }}
         DEBUG: False
       run: |
         python manage.py collectstatic --noinput
@@ -49,4 +49,4 @@ jobs:
       run: |
         echo "Deployment complete! Waiting for service to become healthy..."
         sleep 30
-        curl -f ${{ secrets.DEPLOYMENT_URL }}/health/ || echo "Health check endpoint not found, but deployment may still be successful"
+        curl -f ${{ secrets.DEPLOYMENT_URL }}/health/ || echo "Health check endpoint not found"
