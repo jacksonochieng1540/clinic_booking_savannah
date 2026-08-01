@@ -43,7 +43,7 @@ jobs:
     - name: Run migrations
       env:
         DATABASE_URL: postgresql://postgres:postgres@localhost:5432/clinic_test
-        SECRET_KEY: test-secret-key-for-ci
+        SECRET_KEY: ${{ secrets.SECRET_KEY }}
         DEBUG: False
       run: |
         python manage.py migrate
@@ -51,7 +51,7 @@ jobs:
     - name: Run tests with coverage
       env:
         DATABASE_URL: postgresql://postgres:postgres@localhost:5432/clinic_test
-        SECRET_KEY: test-secret-key-for-ci
+        SECRET_KEY: ${{ secrets.SECRET_KEY }}
         DEBUG: False
       run: |
         python -m pip install coverage
