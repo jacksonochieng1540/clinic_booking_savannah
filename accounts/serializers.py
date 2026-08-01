@@ -43,9 +43,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserCreateSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(
-        write_only=True, required=True, validators=[validate_password]
-    )
+    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
     password2 = serializers.CharField(write_only=True, required=True)
     email = serializers.EmailField(required=True, validators=[EmailValidator()])
 
@@ -70,19 +68,13 @@ class UserCreateSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         if attrs["password"] != attrs["password2"]:
-            raise serializers.ValidationError(
-                {"password": "Password fields didn't match."}
-            )
+            raise serializers.ValidationError({"password": "Password fields didn't match."})
 
         if User.objects.filter(email=attrs["email"]).exists():
-            raise serializers.ValidationError(
-                {"email": "A user with this email already exists."}
-            )
+            raise serializers.ValidationError({"email": "A user with this email already exists."})
 
         if User.objects.filter(username=attrs["username"]).exists():
-            raise serializers.ValidationError(
-                {"username": "A user with this username already exists."}
-            )
+            raise serializers.ValidationError({"username": "A user with this username already exists."})
 
         return attrs
 
@@ -103,19 +95,13 @@ class UserLoginSerializer(serializers.Serializer):
 
         if email and password:
             # Authenticate using email directly (since USERNAME_FIELD = 'email')
-            user = authenticate(
-                request=self.context.get("request"), username=email, password=password
-            )
+            user = authenticate(request=self.context.get("request"), username=email, password=password)
 
             if not user:
-                raise serializers.ValidationError(
-                    {"error": "Invalid email or password"}
-                )
+                raise serializers.ValidationError({"error": "Invalid email or password"})
 
             if not user.is_active:
-                raise serializers.ValidationError(
-                    {"error": "This account is deactivated"}
-                )
+                raise serializers.ValidationError({"error": "This account is deactivated"})
 
             refresh = RefreshToken.for_user(user)
 
@@ -134,9 +120,7 @@ class UserLoginSerializer(serializers.Serializer):
 
             return attrs
         else:
-            raise serializers.ValidationError(
-                {"error": "Email and password are required"}
-            )
+            raise serializers.ValidationError({"error": "Email and password are required"})
 
 
 class UserLogoutSerializer(serializers.Serializer):
@@ -161,9 +145,7 @@ class PasswordChangeSerializer(serializers.Serializer):
 
     def validate(self, attrs):
         if attrs["new_password"] != attrs["new_password2"]:
-            raise serializers.ValidationError(
-                {"new_password": "Password fields didn't match."}
-            )
+            raise serializers.ValidationError({"new_password": "Password fields didn't match."})
         return attrs
 
     def validate_old_password(self, value):
@@ -189,9 +171,7 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
 
     def validate(self, attrs):
         if attrs["new_password"] != attrs["new_password2"]:
-            raise serializers.ValidationError(
-                {"new_password": "Password fields didn't match."}
-            )
+            raise serializers.ValidationError({"new_password": "Password fields didn't match."})
         return attrs
 
 

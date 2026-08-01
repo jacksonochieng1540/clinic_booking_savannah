@@ -7,11 +7,7 @@ class IsAdminUser(permissions.BasePermission):
     """
 
     def has_permission(self, request, view):
-        return (
-            request.user
-            and request.user.is_authenticated
-            and (request.user.role == "admin" or request.user.is_superuser)
-        )
+        return request.user and request.user.is_authenticated and (request.user.role == "admin" or request.user.is_superuser)
 
 
 class IsDoctorUser(permissions.BasePermission):
@@ -20,11 +16,7 @@ class IsDoctorUser(permissions.BasePermission):
     """
 
     def has_permission(self, request, view):
-        return (
-            request.user
-            and request.user.is_authenticated
-            and (request.user.role == "doctor")
-        )
+        return request.user and request.user.is_authenticated and (request.user.role == "doctor")
 
 
 class IsPatientUser(permissions.BasePermission):
@@ -33,11 +25,7 @@ class IsPatientUser(permissions.BasePermission):
     """
 
     def has_permission(self, request, view):
-        return (
-            request.user
-            and request.user.is_authenticated
-            and (request.user.role == "patient")
-        )
+        return request.user and request.user.is_authenticated and (request.user.role == "patient")
 
 
 class IsDoctorOrAdmin(permissions.BasePermission):

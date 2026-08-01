@@ -28,9 +28,7 @@ class User(AbstractUser):
 
     date_of_birth = models.DateField(null=True, blank=True)
     address = models.TextField(blank=True, null=True)
-    profile_picture = models.ImageField(
-        upload_to="profile_pics/", null=True, blank=True
-    )
+    profile_picture = models.ImageField(upload_to="profile_pics/", null=True, blank=True)
 
     last_login_ip = models.GenericIPAddressField(null=True, blank=True)
     is_verified = models.BooleanField(default=False)
@@ -45,10 +43,7 @@ class User(AbstractUser):
         Group,
         verbose_name=_("groups"),
         blank=True,
-        help_text=_(
-            "The groups this user belongs to. A user will get all permissions "
-            "granted to each of their groups."
-        ),
+        help_text=_("The groups this user belongs to. A user will get all permissions " "granted to each of their groups."),
         related_name="custom_user_set",
         related_query_name="custom_user",
     )

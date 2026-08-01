@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -49,12 +48,8 @@ class Migration(migrations.Migration):
             options={
                 "ordering": ["user__first_name", "user__last_name"],
                 "indexes": [
-                    models.Index(
-                        fields=["specialty"], name="doctors_doc_special_4b2702_idx"
-                    ),
-                    models.Index(
-                        fields=["is_available"], name="doctors_doc_is_avai_e473c5_idx"
-                    ),
+                    models.Index(fields=["specialty"], name="doctors_doc_special_4b2702_idx"),
+                    models.Index(fields=["is_available"], name="doctors_doc_is_avai_e473c5_idx"),
                 ],
             },
         ),

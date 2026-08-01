@@ -1,18 +1,18 @@
 // ========== DOCUMENT READY ==========
 $(document).ready(function() {
     console.log('Clinic Booking System loaded!');
-    
+
     // Auto-dismiss alerts after 5 seconds
     setTimeout(function() {
         $('.alert').alert('close');
     }, 5000);
-    
+
     // Initialize tooltips
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl);
     });
-    
+
     // Add smooth transitions to cards
     $('.card').addClass('fade-in');
 });
@@ -29,10 +29,10 @@ function selectSlot(element) {
 function validateForm(formId) {
     var form = document.getElementById(formId);
     if (!form) return true;
-    
+
     var isValid = true;
     var inputs = form.querySelectorAll('input[required], select[required], textarea[required]');
-    
+
     inputs.forEach(function(input) {
         if (!input.value.trim()) {
             input.classList.add('is-invalid');
@@ -41,7 +41,7 @@ function validateForm(formId) {
             input.classList.remove('is-invalid');
         }
     });
-    
+
     return isValid;
 }
 
@@ -127,7 +127,7 @@ function showNotification(message, type) {
         warning: '#F59E0B',
         info: '#3B82F6'
     };
-    
+
     // You can integrate with a toast library here
     alert(message);
 }

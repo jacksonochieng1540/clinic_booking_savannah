@@ -16,17 +16,11 @@ class Appointment(models.Model):
         ("no_show", "No Show"),
     ]
 
-    patient = models.ForeignKey(
-        Patient, on_delete=models.CASCADE, related_name="appointments"
-    )
-    doctor = models.ForeignKey(
-        Doctor, on_delete=models.CASCADE, related_name="appointments"
-    )
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name="appointments")
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name="appointments")
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
-    status = models.CharField(
-        max_length=20, choices=STATUS_CHOICES, default="scheduled"
-    )
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="scheduled")
     cancellation_reason = models.TextField(blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -55,21 +49,15 @@ class Appointment(models.Model):
             raise ValidationError("Bookings must be made at least 1 hour in advance")
 
         day_name = self.start_time.strftime("%A").lower()
-        working_hours = WorkingHours.objects.filter(
-            doctor=self.doctor, day_of_week=day_name, is_available=True
-        )
+        working_hours = WorkingHours.objects.filter(doctor=self.doctor, day_of_week=day_name, is_available=True)
 
         if not working_hours.exists():
             raise ValidationError("Doctor is not available on this day")
 
         is_valid = False
         for wh in working_hours:
-            work_start = timezone.make_aware(
-                timezone.datetime.combine(self.start_time.date(), wh.start_time)
-            )
-            work_end = timezone.make_aware(
-                timezone.datetime.combine(self.start_time.date(), wh.end_time)
-            )
+            work_start = timezone.make_aware(timezone.datetime.combine(self.start_time.date(), wh.start_time))
+            work_end = timezone.make_aware(timezone.datetime.combine(self.start_time.date(), wh.end_time))
             if work_start <= self.start_time < self.end_time <= work_end:
                 is_valid = True
                 break
@@ -114,21 +102,15 @@ class Appointment(models.Model):
             raise ValueError("Rescheduling must be at least 1 hour in advance")
 
         day_name = new_start_time.strftime("%A").lower()
-        working_hours = WorkingHours.objects.filter(
-            doctor=self.doctor, day_of_week=day_name, is_available=True
-        )
+        working_hours = WorkingHours.objects.filter(doctor=self.doctor, day_of_week=day_name, is_available=True)
 
         if not working_hours.exists():
             raise ValueError("Doctor is not available on this day")
 
         is_valid = False
         for wh in working_hours:
-            work_start = timezone.make_aware(
-                timezone.datetime.combine(new_start_time.date(), wh.start_time)
-            )
-            work_end = timezone.make_aware(
-                timezone.datetime.combine(new_start_time.date(), wh.end_time)
-            )
+            work_start = timezone.make_aware(timezone.datetime.combine(new_start_time.date(), wh.start_time))
+            work_end = timezone.make_aware(timezone.datetime.combine(new_start_time.date(), wh.end_time))
             if work_start <= new_start_time < new_end_time <= work_end:
                 is_valid = True
                 break

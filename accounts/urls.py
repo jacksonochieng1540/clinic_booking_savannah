@@ -13,17 +13,13 @@ urlpatterns = [
         views_dashboard.patient_dashboard,
         name="patient_dashboard",
     ),
-    path(
-        "dashboard/doctor/", views_dashboard.doctor_dashboard, name="doctor_dashboard"
-    ),
+    path("dashboard/doctor/", views_dashboard.doctor_dashboard, name="doctor_dashboard"),
     path("dashboard/admin/", views_dashboard.admin_dashboard, name="admin_dashboard"),
     # API Authentication endpoints
     path("api/register/", views.RegisterView.as_view(), name="api-register"),
     path("api/login/", views.LoginView.as_view(), name="api-login"),
     path("api/logout/", views.LogoutView.as_view(), name="api-logout"),
-    path(
-        "api/token/refresh/", views.TokenRefreshView.as_view(), name="api-token-refresh"
-    ),
+    path("api/token/refresh/", views.TokenRefreshView.as_view(), name="api-token-refresh"),
     path("api/profile/", views.UserProfileView.as_view(), name="api-profile"),
     path(
         "api/change-password/",

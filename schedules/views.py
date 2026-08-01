@@ -74,9 +74,7 @@ class DoctorAvailabilityView(generics.GenericAPIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        working_hours = WorkingHours.objects.filter(
-            doctor=doctor, day_of_week=date.strftime("%A").lower(), is_available=True
-        )
+        working_hours = WorkingHours.objects.filter(doctor=doctor, day_of_week=date.strftime("%A").lower(), is_available=True)
 
         if not working_hours.exists():
             return Response(

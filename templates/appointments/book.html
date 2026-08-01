@@ -65,12 +65,12 @@ $(document).ready(function() {
             select.append(`<option value="${doctor.id}">Dr. ${doctor.name} - ${doctor.specialty}</option>`);
         });
     });
-    
+
     // Check availability on doctor/date change
     function checkAvailability() {
         var doctorId = $('#doctor').val();
         var date = $('#date').val();
-        
+
         if (doctorId && date) {
             $.get(`/schedules/api/doctors/${doctorId}/availability/?date=${date}`, function(data) {
                 var grid = $('#slotsGrid');
@@ -90,7 +90,7 @@ $(document).ready(function() {
             });
         }
     }
-    
+
     $('#doctor, #date').on('change', checkAvailability);
 });
 </script>

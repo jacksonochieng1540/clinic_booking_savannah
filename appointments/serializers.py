@@ -69,9 +69,7 @@ class AppointmentCreateSerializer(serializers.Serializer):
 
         end_time = start_time + timezone.timedelta(minutes=30)
 
-        if Appointment.objects.filter(
-            doctor=doctor, start_time=start_time, status__in=["scheduled", "confirmed"]
-        ).exists():
+        if Appointment.objects.filter(doctor=doctor, start_time=start_time, status__in=["scheduled", "confirmed"]).exists():
             raise serializers.ValidationError("This time slot is already booked")
 
         data["patient"] = patient

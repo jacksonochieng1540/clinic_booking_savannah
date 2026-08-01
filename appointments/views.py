@@ -5,17 +5,21 @@ from rest_framework import generics, status
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
-from core.email import (send_appointment_cancellation_email,
-                        send_appointment_confirmation_email,
-                        send_appointment_reschedule_email)
+from core.email import (
+    send_appointment_cancellation_email,
+    send_appointment_confirmation_email,
+    send_appointment_reschedule_email,
+)
 from core.permissions import IsAdminUser, IsDoctorUser, IsPatientUser
 
 from .models import Appointment
-from .serializers import (AppointmentCancelSerializer,
-                          AppointmentCreateSerializer,
-                          AppointmentListSerializer,
-                          AppointmentRescheduleSerializer,
-                          AppointmentSerializer)
+from .serializers import (
+    AppointmentCancelSerializer,
+    AppointmentCreateSerializer,
+    AppointmentListSerializer,
+    AppointmentRescheduleSerializer,
+    AppointmentSerializer,
+)
 
 
 def _error_message(exc):
@@ -39,9 +43,7 @@ class AppointmentCreateView(generics.CreateAPIView):
         # Send confirmation email
         send_appointment_confirmation_email(appointment)
 
-        return Response(
-            AppointmentSerializer(appointment).data, status=status.HTTP_201_CREATED
-        )
+        return Response(AppointmentSerializer(appointment).data, status=status.HTTP_201_CREATED)
 
 
 class AppointmentCancelView(generics.GenericAPIView):
@@ -65,9 +67,7 @@ class AppointmentCancelView(generics.GenericAPIView):
         try:
             appointment.cancel(reason=serializer.validated_data.get("reason"))
         except (ValueError, DjangoValidationError) as exc:
-            return Response(
-                {"error": _error_message(exc)}, status=status.HTTP_400_BAD_REQUEST
-            )
+            return Response({"error": _error_message(exc)}, status=status.HTTP_400_BAD_REQUEST)
 
         # Send cancellation email
         send_appointment_cancellation_email(appointment)
@@ -103,9 +103,7 @@ class AppointmentRescheduleView(generics.GenericAPIView):
         try:
             old_time = appointment.reschedule(new_start_time)
         except (ValueError, DjangoValidationError) as exc:
-            return Response(
-                {"error": _error_message(exc)}, status=status.HTTP_400_BAD_REQUEST
-            )
+            return Response({"error": _error_message(exc)}, status=status.HTTP_400_BAD_REQUEST)
 
         # Send reschedule email
         send_appointment_reschedule_email(appointment, old_time)
@@ -129,9 +127,9 @@ class PatientAppointmentsView(generics.GenericAPIView):
 
         patient = get_object_or_404(Patient, id=patient_id)
 
-        upcoming = patient.appointments.filter(
-            status__in=["scheduled", "confirmed"], start_time__gte=timezone.now()
-        ).order_by("start_time")
+        upcoming = patient.appointments.filter(status__in=["scheduled", "confirmed"], start_time__gte=timezone.now()).order_by(
+            "start_time"
+        )
 
         serializer = AppointmentListSerializer(upcoming, many=True)
 

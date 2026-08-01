@@ -18,9 +18,7 @@ def send_email(subject, to_email, template_name, context, from_email=None):
         html_content = render_to_string(template_name, context)
         text_content = strip_tags(html_content)
 
-        email = EmailMultiAlternatives(
-            subject=subject, body=text_content, from_email=from_email, to=[to_email]
-        )
+        email = EmailMultiAlternatives(subject=subject, body=text_content, from_email=from_email, to=[to_email])
         email.attach_alternative(html_content, "text/html")
         email.send()
 
