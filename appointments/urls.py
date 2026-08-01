@@ -4,9 +4,7 @@ from . import views
 
 urlpatterns = [
     path("api/", views.AppointmentListView.as_view(), name="appointment-list"),
-    path(
-        "api/create/", views.AppointmentCreateView.as_view(), name="appointment-create"
-    ),
+    path("api/create/", views.AppointmentCreateView.as_view(), name="appointment-create"),
     path(
         "api/<int:id>/",
         views.AppointmentDetailView.as_view(),

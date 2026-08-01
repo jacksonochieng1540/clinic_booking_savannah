@@ -58,9 +58,7 @@ class AccountsTests(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         # Check for email or username error
-        self.assertTrue(
-            "email" in str(response.data) or "username" in str(response.data)
-        )
+        self.assertTrue("email" in str(response.data) or "username" in str(response.data))
 
     def test_register_password_mismatch(self):
         """Test registration with mismatched passwords"""
@@ -116,9 +114,7 @@ class AccountsTests(TestCase):
         # Logout with token
         self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {access_token}")
         logout_url = reverse("api-logout")
-        response = self.client.post(
-            logout_url, {"refresh_token": refresh_token}, format="json"
-        )
+        response = self.client.post(logout_url, {"refresh_token": refresh_token}, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["message"], "Logged out successfully")
@@ -202,9 +198,7 @@ class AccountsTests(TestCase):
         response = self.client.post(url, data, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(
-            response.data["message"], "Password reset link sent to your email"
-        )
+        self.assertEqual(response.data["message"], "Password reset link sent to your email")
 
     def test_password_reset_request_invalid_email(self):
         """Test password reset with invalid email"""

@@ -1,26 +1,33 @@
-from rest_framework import generics, status, permissions
+import random
+import string
+from datetime import datetime
+
+from django.contrib import messages
+from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import redirect, render
+from django.utils import timezone
+from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenRefreshView
-from django.contrib.auth import get_user_model
-from django.shortcuts import render, redirect
-from django.utils import timezone
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-import random
-import string
- 
-from .serializers import (
-    UserSerializer, UserCreateSerializer, UserLoginSerializer,
-    UserLogoutSerializer, PasswordChangeSerializer,
-    PasswordResetSerializer, PasswordResetConfirmSerializer,
-    UserActivityLogSerializer
-)
-from .models import UserActivityLog
+
+from core.email import send_password_reset_email, send_welcome_email
 from core.permissions import IsAdminUser
-from core.email import send_welcome_email, send_password_reset_email
- 
+
+from .models import UserActivityLog
+from .serializers import (
+    PasswordChangeSerializer,
+    PasswordResetConfirmSerializer,
+    PasswordResetSerializer,
+    UserActivityLogSerializer,
+    UserCreateSerializer,
+    UserLoginSerializer,
+    UserLogoutSerializer,
+    UserSerializer,
+)
+
 User = get_user_model()
 
 
@@ -56,9 +63,7 @@ class LoginView(APIView):
     serializer_class = UserLoginSerializer
 
     def post(self, request):
-        serializer = UserLoginSerializer(
-            data=request.data, context={"request": request}
-        )
+        serializer = UserLoginSerializer(data=request.data, context={"request": request})
         serializer.is_valid(raise_exception=True)
         return Response(
             {
@@ -88,9 +93,7 @@ class LogoutView(APIView):
             ip_address=request.META.get("REMOTE_ADDR", ""),
             user_agent=request.META.get("HTTP_USER_AGENT", ""),
         )
-        return Response(
-            {"message": "Logged out successfully"}, status=status.HTTP_200_OK
-        )
+        return Response({"message": "Logged out successfully"}, status=status.HTTP_200_OK)
 
 
 class TokenRefreshView(TokenRefreshView):
@@ -116,16 +119,12 @@ class PasswordChangeView(generics.GenericAPIView):
     serializer_class = PasswordChangeSerializer
 
     def post(self, request):
-        serializer = self.get_serializer(
-            data=request.data, context={"request": request}
-        )
+        serializer = self.get_serializer(data=request.data, context={"request": request})
         serializer.is_valid(raise_exception=True)
         user = request.user
         user.set_password(serializer.validated_data["new_password"])
         user.save()
-        return Response(
-            {"message": "Password changed successfully"}, status=status.HTTP_200_OK
-        )
+        return Response({"message": "Password changed successfully"}, status=status.HTTP_200_OK)
 
 
 class PasswordResetRequestView(generics.GenericAPIView):
@@ -176,16 +175,12 @@ class PasswordResetConfirmView(generics.GenericAPIView):
         if user.token_created_at:
             expiry_time = user.token_created_at + timezone.timedelta(hours=1)
             if timezone.now() > expiry_time:
-                return Response(
-                    {"error": "Token has expired"}, status=status.HTTP_400_BAD_REQUEST
-                )
+                return Response({"error": "Token has expired"}, status=status.HTTP_400_BAD_REQUEST)
         user.set_password(new_password)
         user.password_reset_token = None
         user.token_created_at = None
         user.save()
-        return Response(
-            {"message": "Password reset successfully"}, status=status.HTTP_200_OK
-        )
+        return Response({"message": "Password reset successfully"}, status=status.HTTP_200_OK)
 
 
 class UserActivityLogView(generics.ListAPIView):
@@ -220,9 +215,7 @@ class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
         instance = self.get_object()
         instance.is_active = False
         instance.save()
-        return Response(
-            {"message": "User deactivated successfully"}, status=status.HTTP_200_OK
-        )
+        return Response({"message": "User deactivated successfully"}, status=status.HTTP_200_OK)
 
 
 # ==================== TEMPLATE VIEWS ====================

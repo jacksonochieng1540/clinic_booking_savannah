@@ -12,9 +12,7 @@ class WorkingHours(models.Model):
         ("friday", "Friday"),
     ]
 
-    doctor = models.ForeignKey(
-        Doctor, on_delete=models.CASCADE, related_name="working_hours"
-    )
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name="working_hours")
     day_of_week = models.CharField(max_length=10, choices=DAYS_OF_WEEK)
     start_time = models.TimeField()
     end_time = models.TimeField()

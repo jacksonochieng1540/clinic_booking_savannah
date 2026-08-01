@@ -14,12 +14,8 @@ def generate_time_slots(date, working_hours_dict):
     if not hours:
         return []
 
-    work_start = timezone.make_aware(
-        datetime.strptime(f"{date.date()} {hours['start']}", "%Y-%m-%d %H:%M")
-    )
-    work_end = timezone.make_aware(
-        datetime.strptime(f"{date.date()} {hours['end']}", "%Y-%m-%d %H:%M")
-    )
+    work_start = timezone.make_aware(datetime.strptime(f"{date.date()} {hours['start']}", "%Y-%m-%d %H:%M"))
+    work_end = timezone.make_aware(datetime.strptime(f"{date.date()} {hours['end']}", "%Y-%m-%d %H:%M"))
 
     slots = []
     current = work_start
@@ -42,12 +38,8 @@ def validate_appointment_time(start_time, end_time, working_hours_list):
         if working_hours.day_of_week != day_name:
             continue
 
-        work_start = timezone.make_aware(
-            datetime.combine(start_time.date(), working_hours.start_time)
-        )
-        work_end = timezone.make_aware(
-            datetime.combine(start_time.date(), working_hours.end_time)
-        )
+        work_start = timezone.make_aware(datetime.combine(start_time.date(), working_hours.start_time))
+        work_end = timezone.make_aware(datetime.combine(start_time.date(), working_hours.end_time))
 
         if work_start <= start_time < end_time <= work_end:
             return True, "Valid"

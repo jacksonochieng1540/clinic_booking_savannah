@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -74,9 +73,7 @@ class Migration(migrations.Migration):
                         fields=["patient", "start_time"],
                         name="appointment_patient_fbd73b_idx",
                     ),
-                    models.Index(
-                        fields=["status"], name="appointment_status_8fe9d7_idx"
-                    ),
+                    models.Index(fields=["status"], name="appointment_status_8fe9d7_idx"),
                 ],
             },
         ),

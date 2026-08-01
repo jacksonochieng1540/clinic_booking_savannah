@@ -48,17 +48,11 @@ def patient_dashboard(request):
         patient=patient, start_time__gte=now, status__in=["scheduled", "confirmed"]
     ).order_by("start_time")[:10]
 
-    past_appointments = Appointment.objects.filter(
-        patient=patient, start_time__lt=now
-    ).order_by("-start_time")[:10]
+    past_appointments = Appointment.objects.filter(patient=patient, start_time__lt=now).order_by("-start_time")[:10]
 
     total_appointments = Appointment.objects.filter(patient=patient).count()
-    completed_appointments = Appointment.objects.filter(
-        patient=patient, status="completed"
-    ).count()
-    cancelled_appointments = Appointment.objects.filter(
-        patient=patient, status="cancelled"
-    ).count()
+    completed_appointments = Appointment.objects.filter(patient=patient, status="completed").count()
+    cancelled_appointments = Appointment.objects.filter(patient=patient, status="cancelled").count()
     upcoming_count = Appointment.objects.filter(
         patient=patient, start_time__gte=now, status__in=["scheduled", "confirmed"]
     ).count()
@@ -118,9 +112,7 @@ def doctor_dashboard(request):
     week_start = now - timedelta(days=now.weekday())
     week_end = week_start + timedelta(days=7)
 
-    weekly_appointments = Appointment.objects.filter(
-        doctor=doctor, start_time__gte=week_start, start_time__lt=week_end
-    )
+    weekly_appointments = Appointment.objects.filter(doctor=doctor, start_time__gte=week_start, start_time__lt=week_end)
 
     context = {
         "doctor": doctor,
@@ -153,13 +145,9 @@ def admin_dashboard(request):
     today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
     today_end = today_start + timedelta(days=1)
 
-    today_appointments = Appointment.objects.filter(
-        start_time__gte=today_start, start_time__lt=today_end
-    ).count()
+    today_appointments = Appointment.objects.filter(start_time__gte=today_start, start_time__lt=today_end).count()
 
-    upcoming_appointments = Appointment.objects.filter(
-        start_time__gte=now, status__in=["scheduled", "confirmed"]
-    ).count()
+    upcoming_appointments = Appointment.objects.filter(start_time__gte=now, status__in=["scheduled", "confirmed"]).count()
 
     completed_appointments = Appointment.objects.filter(status="completed").count()
     cancelled_appointments = Appointment.objects.filter(status="cancelled").count()
@@ -168,9 +156,7 @@ def admin_dashboard(request):
     recent_users = User.objects.all().order_by("-date_joined")[:10]
 
     month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-    monthly_appointments = Appointment.objects.filter(
-        created_at__gte=month_start
-    ).count()
+    monthly_appointments = Appointment.objects.filter(created_at__gte=month_start).count()
 
     context = {
         "total_doctors": total_doctors,

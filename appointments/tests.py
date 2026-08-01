@@ -18,7 +18,6 @@ User = get_user_model()
 
 
 class AppointmentsTests(TestCase):
-
     @classmethod
     def setUpTestData(cls):
         """Set up test data once for all tests"""
@@ -85,15 +84,11 @@ class AppointmentsTests(TestCase):
         now = timezone.now()
         self.future_date = now + timedelta(days=3)
         # Set to 10:00 AM
-        self.future_date = self.future_date.replace(
-            hour=10, minute=0, second=0, microsecond=0
-        )
+        self.future_date = self.future_date.replace(hour=10, minute=0, second=0, microsecond=0)
 
         # Past date - 3 days ago
         self.past_date = now - timedelta(days=3)
-        self.past_date = self.past_date.replace(
-            hour=10, minute=0, second=0, microsecond=0
-        )
+        self.past_date = self.past_date.replace(hour=10, minute=0, second=0, microsecond=0)
 
     def test_create_appointment_success(self):
         """Test successful appointment creation"""
@@ -178,9 +173,7 @@ class AppointmentsTests(TestCase):
         within_hour = timezone.now() + timedelta(minutes=30)
         # Make sure it's on a 30-minute boundary
         if within_hour.minute not in [0, 30]:
-            within_hour = within_hour.replace(
-                minute=0 if within_hour.minute < 30 else 30, second=0, microsecond=0
-            )
+            within_hour = within_hour.replace(minute=0 if within_hour.minute < 30 else 30, second=0, microsecond=0)
 
         data = {
             "patient_id": self.patient.id,
@@ -233,9 +226,7 @@ class AppointmentsTests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["message"], "Appointment cancelled successfully")
         self.assertEqual(response.data["appointment"]["status"], "cancelled")
-        self.assertEqual(
-            response.data["appointment"]["cancellation_reason"], "Patient is sick"
-        )
+        self.assertEqual(response.data["appointment"]["cancellation_reason"], "Patient is sick")
 
     def test_cancel_already_cancelled(self):
         """Test cancelling an already cancelled appointment"""
@@ -275,16 +266,12 @@ class AppointmentsTests(TestCase):
 
         # Reschedule to 2:00 PM on same day
         new_time = self.future_date.replace(hour=14, minute=0)
-        reschedule_url = reverse(
-            "appointment-reschedule", kwargs={"id": appointment_id}
-        )
+        reschedule_url = reverse("appointment-reschedule", kwargs={"id": appointment_id})
         reschedule_data = {"new_start_time": new_time.isoformat()}
         response = self.client.patch(reschedule_url, reschedule_data, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(
-            response.data["message"], "Appointment rescheduled successfully"
-        )
+        self.assertEqual(response.data["message"], "Appointment rescheduled successfully")
 
         # Verify the new time
         appointment_obj = Appointment.objects.get(id=appointment_id)
@@ -320,9 +307,7 @@ class AppointmentsTests(TestCase):
         appointment2_id = response2.data["id"]
 
         # Try to reschedule second appointment to the first appointment's time
-        reschedule_url = reverse(
-            "appointment-reschedule", kwargs={"id": appointment2_id}
-        )
+        reschedule_url = reverse("appointment-reschedule", kwargs={"id": appointment2_id})
         reschedule_data = {"new_start_time": self.future_date.isoformat()}
         response = self.client.patch(reschedule_url, reschedule_data, format="json")
 
@@ -349,9 +334,7 @@ class AppointmentsTests(TestCase):
         self.client.patch(cancel_url, {"reason": "Test"}, format="json")
 
         # Try to reschedule
-        reschedule_url = reverse(
-            "appointment-reschedule", kwargs={"id": appointment_id}
-        )
+        reschedule_url = reverse("appointment-reschedule", kwargs={"id": appointment_id})
         new_time = self.future_date.replace(hour=14, minute=0)
         reschedule_data = {"new_start_time": new_time.isoformat()}
         response = self.client.patch(reschedule_url, reschedule_data, format="json")
