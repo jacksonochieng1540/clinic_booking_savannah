@@ -1,20 +1,31 @@
 version: '3.8'
 
 services:
+  nginx:
+    build: ./nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - web
+    volumes:
+      - ./staticfiles:/app/staticfiles
+      - ./media:/app/media
+    restart: unless-stopped
+
   web:
     build: .
-    command: gunicorn clinic_booking.wsgi:application --bind 0.0.0.0:8000
-    ports:
-      - "8000:8000"
+    command: gunicorn clinic_booking.wsgi:application --bind 0.0.0.0:8000 --workers 4 --threads 2
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/clinic_db
       - SECRET_KEY=${SECRET_KEY}
       - DEBUG=False
+      - ALLOWED_HOSTS=localhost,clinic-booking.onrender.com
     depends_on:
       - db
     volumes:
       - ./staticfiles:/app/staticfiles
       - ./media:/app/media
+    restart: unless-stopped
 
   db:
     image: postgres:15
@@ -26,6 +37,7 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data/
+    restart: unless-stopped
 
 volumes:
   postgres_data:

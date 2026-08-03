@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block title %}My Appointments - Clinic Booking{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-calendar text-primary"></i> My Appointments</h2>
+        <a href="{% url 'book_appointment' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Book New
+        </a>
+    </div>
+
+    <!-- Statistics -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3 class="text-primary">{{ appointments|length }}</h3>
+                    <p class="text-muted">Total</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3 class="text-success">{{ upcoming_count }}</h3>
+                    <p class="text-muted">Upcoming</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3 class="text-secondary">{{ past_count }}</h3>
+                    <p class="text-muted">Past</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Appointments List -->
+    <div class="card shadow-sm">
+        <div class="card-body">
+            {% if appointments %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Doctor</th>
+                                <th>Date & Time</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for appointment in appointments %}
+                                <tr>
+                                    <td>
+                                        <strong>Dr. {{ appointment.doctor.user.get_full_name }}</strong><br>
+                                        <small class="text-muted">{{ appointment.doctor.specialty }}</small>
+                                    </td>
+                                    <td>
+                                        {{ appointment.start_time|date:"M d, Y" }}<br>
+                                        <small class="text-muted">{{ appointment.start_time|time:"g:i A" }}</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge {% if appointment.status == 'scheduled' %}bg-primary{% elif appointment.status == 'confirmed' %}bg-success{% elif appointment.status == 'cancelled' %}bg-danger{% else %}bg-secondary{% endif %}">
+                                            {{ appointment.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'appointment_detail' appointment.id %}" class="btn btn-sm btn-outline-primary">View</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-center py-4">
+                    <i class="bi bi-calendar2-x display-4 d-block text-muted"></i>
+                    No appointments found.
+                    <a href="{% url 'book_appointment' %}">Book your first appointment!</a>
+                </p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

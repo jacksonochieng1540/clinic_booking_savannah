@@ -218,9 +218,6 @@ class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
         return Response({"message": "User deactivated successfully"}, status=status.HTTP_200_OK)
 
 
-# ==================== TEMPLATE VIEWS ====================
-
-
 @login_required
 def profile_view(request):
     """User profile view"""
@@ -239,3 +236,83 @@ def profile_view(request):
 def home_view(request):
     """Home page"""
     return render(request, "home.html")
+
+
+def login_view(request):
+    """Template-based login view"""
+    if request.method == "POST":
+        email = request.POST.get("email")
+        password = request.POST.get("password")
+
+        from django.contrib.auth import authenticate, login
+
+        user = authenticate(request, username=email, password=password)
+
+        if user is not None:
+            login(request, user)
+            messages.success(request, f"Welcome back, {user.get_full_name()}!")
+            return redirect("dashboard")
+        else:
+            messages.error(request, "Invalid email or password.")
+
+    return render(request, "accounts/login.html")
+
+
+def register_view(request):
+    """Template-based registration view"""
+    if request.method == "POST":
+        email = request.POST.get("email")
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+        password2 = request.POST.get("password2")
+        first_name = request.POST.get("first_name")
+        last_name = request.POST.get("last_name")
+        phone_number = request.POST.get("phone_number")
+        role = request.POST.get("role", "patient")
+
+        # Validation
+        if password != password2:
+            messages.error(request, "Passwords do not match.")
+            return render(request, "accounts/register.html")
+
+        if User.objects.filter(email=email).exists():
+            messages.error(request, "Email already registered.")
+            return render(request, "accounts/register.html")
+
+        if User.objects.filter(username=username).exists():
+            messages.error(request, "Username already taken.")
+            return render(request, "accounts/register.html")
+
+        # Create user
+        user = User.objects.create_user(
+            email=email,
+            username=username,
+            password=password,
+            first_name=first_name,
+            last_name=last_name,
+            phone_number=phone_number,
+            role=role,
+        )
+
+        # Create user profile
+        from .models import UserProfile
+
+        UserProfile.objects.create(user=user)
+
+        # Log the user in
+        from django.contrib.auth import login
+
+        login(request, user)
+        messages.success(request, f"Welcome to Clinic Booking, {user.get_full_name()}!")
+        return redirect("dashboard")
+
+    return render(request, "accounts/register.html")
+
+
+def logout_view(request):
+    """Template-based logout view"""
+    from django.contrib.auth import logout
+
+    logout(request)
+    messages.success(request, "You have been logged out.")
+    return redirect("home")

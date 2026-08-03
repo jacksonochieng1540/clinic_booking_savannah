@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 
 from doctors.models import Doctor
@@ -10,6 +11,8 @@ class WorkingHours(models.Model):
         ("wednesday", "Wednesday"),
         ("thursday", "Thursday"),
         ("friday", "Friday"),
+        ("saturday", "Saturday"),
+        ("sunday", "Sunday"),
     ]
 
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name="working_hours")
@@ -32,4 +35,4 @@ class WorkingHours(models.Model):
 
     def clean(self):
         if self.start_time >= self.end_time:
-            raise models.ValidationError("Start time must be before end time")
+            raise ValidationError("Start time must be before end time")

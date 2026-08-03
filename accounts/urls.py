@@ -5,6 +5,9 @@ from . import views, views_dashboard
 
 urlpatterns = [
     # Template views
+    path("login/", views.login_view, name="login"),
+    path("register/", views.register_view, name="register"),
+    path("logout/", views.logout_view, name="logout"),
     path("profile/", views.profile_view, name="profile"),
     # Dashboard URLs
     path("dashboard/", views_dashboard.dashboard_view, name="dashboard"),

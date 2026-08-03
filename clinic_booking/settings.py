@@ -63,13 +63,13 @@ INSTALLED_APPS = [
     "corsheaders",
     "django_filters",
     "drf_yasg",
-    "allauth",
-    "allauth.account",
-    "allauth.socialaccount",
-    "allauth.socialaccount.providers.google",
     "crispy_forms",
     "crispy_bootstrap5",
     "widget_tweaks",
+    # "allauth",
+    # "allauth.account",
+    # "allauth.socialaccount",
+    # "allauth.socialaccount.providers.google",
 ]
 
 
@@ -261,13 +261,26 @@ DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "noreply@clinic.com")
 # GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID', '')
 # GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET', '')
 
-# # CORS
-# CORS_ALLOW_ALL_ORIGINS = True
 
-# # Production security
-# if not DEBUG:
-#     SECURE_SSL_REDIRECT = True
-#     SESSION_COOKIE_SECURE = True
-#     CSRF_COOKIE_SECURE = True
-#     SECURE_BROWSER_XSS_FILTER = True
-#     SECURE_CONTENT_TYPE_NOSNIFF = True
+# Security settings for NGINX reverse proxy
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+USE_X_FORWARDED_HOST = True
+USE_X_FORWARDED_PORT = True
+
+# Session and CSRF cookie settings
+CSRF_TRUSTED_ORIGINS = [
+    "https://clinic-booking.onrender.com",
+    "http://localhost",
+    "http://127.0.0.1",
+]
+
+# Security headers
+if not DEBUG:
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True

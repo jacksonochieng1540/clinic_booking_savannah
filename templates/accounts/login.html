@@ -12,7 +12,7 @@
                     <h4 class="mb-0"><i class="bi bi-box-arrow-in-right"></i> Login</h4>
                 </div>
                 <div class="card-body p-4">
-                    <form method="post" action="{% url 'api-login' %}">
+                    <form method="post" action="{% url 'login' %}">
                         {% csrf_token %}
                         <div class="mb-3">
                             <label for="email" class="form-label">Email Address</label>
@@ -30,7 +30,7 @@
                     <hr>
 
                     <div class="text-center">
-                        <p class="text-muted">Don't have an account? <a href="{% url 'api-register' %}">Register here</a></p>
+                        <p class="text-muted">Don't have an account? <a href="{% url 'register' %}">Register here</a></p>
                         <p><a href="{% url 'api-password-reset' %}">Forgot Password?</a></p>
                     </div>
                 </div>

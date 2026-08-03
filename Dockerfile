@@ -1,12 +1,9 @@
-# Use Python 3.10 slim image
 FROM python:3.10-slim
 
-# Set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 ENV DJANGO_SETTINGS_MODULE clinic_booking.settings
 
-# Set work directory
 WORKDIR /app
 
 # Install system dependencies
@@ -29,8 +26,6 @@ RUN python manage.py collectstatic --noinput
 RUN adduser --disabled-password --gecos '' appuser
 USER appuser
 
-# Expose port
 EXPOSE 8000
 
-# Run the application with gunicorn
 CMD ["gunicorn", "clinic_booking.wsgi:application", "--bind", "0.0.0.0:8000"]

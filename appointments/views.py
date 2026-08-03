@@ -1,5 +1,7 @@
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError as DjangoValidationError
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from rest_framework import generics, status
 from rest_framework.exceptions import ValidationError
@@ -11,6 +13,7 @@ from core.email import (
     send_appointment_reschedule_email,
 )
 from core.permissions import IsAdminUser, IsDoctorUser, IsPatientUser
+from doctors.models import Doctor
 
 from .models import Appointment
 from .serializers import (
@@ -172,3 +175,83 @@ class AppointmentListView(generics.ListAPIView):
             queryset = queryset.filter(status=status_filter)
 
         return queryset.order_by("-start_time")
+
+
+@login_required
+def book_appointment_view(request):
+    """Book appointment page"""
+    doctors = Doctor.objects.filter(is_available=True)
+    return render(request, "appointments/book.html", {"doctors": doctors})
+
+
+@login_required
+def appointment_list_view(request):
+    """List all appointments for the logged-in user"""
+    user = request.user
+    appointments = Appointment.objects.filter(patient__user=user).order_by("-start_time")
+
+    return render(
+        request,
+        "appointments/list.html",
+        {
+            "appointments": appointments,
+            "upcoming_count": appointments.filter(
+                start_time__gte=timezone.now(), status__in=["scheduled", "confirmed"]
+            ).count(),
+            "past_count": appointments.filter(start_time__lt=timezone.now()).count(),
+        },
+    )
+
+
+@login_required
+def appointment_detail_view(request, id):
+    """Appointment detail page"""
+    appointment = get_object_or_404(Appointment, id=id)
+
+    # Check if user has access
+    if request.user.role == "patient" and appointment.patient.user != request.user:
+        messages.error(request, "You don't have permission to view this appointment.")
+        return redirect("appointment_list")
+
+    return render(request, "appointments/detail.html", {"appointment": appointment})
+
+
+@login_required
+def cancel_appointment_view(request, id):
+    """Cancel appointment from frontend"""
+    appointment = get_object_or_404(Appointment, id=id)
+
+    if request.method == "POST":
+        reason = request.POST.get("reason", "Cancelled by patient")
+        try:
+            appointment.cancel(reason=reason)
+            messages.success(request, "Appointment cancelled successfully.")
+            send_appointment_cancellation_email(appointment)
+        except Exception as e:
+            messages.error(request, str(e))
+        return redirect("appointment_detail", id=id)
+
+    return render(request, "appointments/cancel.html", {"appointment": appointment})
+
+
+@login_required
+def reschedule_appointment_view(request, id):
+    """Reschedule appointment from frontend"""
+    appointment = get_object_or_404(Appointment, id=id)
+
+    if request.method == "POST":
+        new_start_time_str = request.POST.get("new_start_time")
+        if not new_start_time_str:
+            messages.error(request, "Please select a new time.")
+            return render(request, "appointments/reschedule.html", {"appointment": appointment})
+
+        try:
+            new_start_time = timezone.datetime.fromisoformat(new_start_time_str)
+            old_time = appointment.reschedule(new_start_time)
+            send_appointment_reschedule_email(appointment, old_time)
+            messages.success(request, "Appointment rescheduled successfully.")
+        except Exception as e:
+            messages.error(request, str(e))
+        return redirect("appointment_detail", id=id)
+
+    return render(request, "appointments/reschedule.html", {"appointment": appointment})

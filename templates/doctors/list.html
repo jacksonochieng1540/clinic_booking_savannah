@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}Find Doctors - Clinic Booking{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h2><i class="bi bi-search text-primary"></i> Find Doctors</h2>
+    <hr>
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <input type="text" id="searchInput" class="form-control" placeholder="Search by name or specialty...">
+        </div>
+        <div class="col-md-6 text-end">
+            <a href="{% url 'book_appointment' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Book Appointment
+            </a>
+        </div>
+    </div>
+
+    <div class="row" id="doctorGrid">
+        {% for doctor in doctors %}
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <i class="bi bi-person-circle display-2 text-primary"></i>
+                        <h5 class="mt-2">Dr. {{ doctor.user.get_full_name }}</h5>
+                        <p class="text-muted">{{ doctor.specialty }}</p>
+                        <p class="small">
+                            <span class="badge {% if doctor.is_available %}bg-success{% else %}bg-danger{% endif %}">
+                                {% if doctor.is_available %}Available{% else %}Unavailable{% endif %}
+                            </span>
+                        </p>
+                        <p class="small text-muted">{{ doctor.years_of_experience }} years experience</p>
+                        <p class="fw-bold">${{ doctor.consultation_fee }}</p>
+                        <a href="{% url 'doctor_detail' doctor.id %}" class="btn btn-outline-primary btn-sm">View Profile</a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12 text-center py-5">
+                <i class="bi bi-person-x display-4 text-muted"></i>
+                <p>No doctors available at the moment.</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    document.getElementById('searchInput').addEventListener('keyup', function() {
+        const filter = this.value.toLowerCase();
+        const cards = document.querySelectorAll('#doctorGrid .col-md-4');
+        cards.forEach(card => {
+            const text = card.textContent.toLowerCase();
+            card.style.display = text.includes(filter) ? '' : 'none';
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %}
