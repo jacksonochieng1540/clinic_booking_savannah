@@ -12,7 +12,7 @@
                     <h4 class="mb-0"><i class="bi bi-person-plus"></i> Create Account</h4>
                 </div>
                 <div class="card-body p-4">
-                    <form method="post" action="{% url 'api-register' %}">
+                    <form method="post" action="{% url 'register' %}">
                         {% csrf_token %}
                         <div class="row">
                             <div class="col-md-6 mb-3">
@@ -59,7 +59,7 @@
                     <hr>
 
                     <div class="text-center">
-                        <p class="text-muted">Already have an account? <a href="{% url 'api-login' %}">Login here</a></p>
+                        <p class="text-muted">Already have an account? <a href="{% url 'login' %}">Login here</a></p>
                     </div>
                 </div>
             </div>

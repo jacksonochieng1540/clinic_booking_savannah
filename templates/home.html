@@ -16,14 +16,14 @@
                     <a href="{% url 'dashboard' %}" class="btn btn-primary btn-lg me-2">
                         <i class="bi bi-speedometer2"></i> Go to Dashboard
                     </a>
-                    <a href="{% url 'admin:index' %}" class="btn btn-outline-secondary btn-lg">
-                        <i class="bi bi-gear"></i> Admin
+                    <a href="{% url 'appointment_list' %}" class="btn btn-outline-primary btn-lg">
+                        <i class="bi bi-calendar"></i> My Appointments
                     </a>
                 {% else %}
-                    <a href="{% url 'api-register' %}" class="btn btn-success btn-lg me-2">
+                    <a href="{% url 'register' %}" class="btn btn-success btn-lg me-2">
                         <i class="bi bi-person-plus"></i> Get Started
                     </a>
-                    <a href="{% url 'api-login' %}" class="btn btn-primary btn-lg">
+                    <a href="{% url 'login' %}" class="btn btn-primary btn-lg">
                         <i class="bi bi-box-arrow-in-right"></i> Login
                     </a>
                 {% endif %}
@@ -35,7 +35,7 @@
                         <div class="text-center">
                             <i class="bi bi-calendar-check display-6 text-primary"></i>
                             <p class="mb-0"><strong>Easy Booking</strong></p>
-                            <small class="text-muted">Book in 30-second slots</small>
+                            <small class="text-muted">Book in 30-minute slots</small>
                         </div>
                     </div>
                     <div class="col-sm-4">

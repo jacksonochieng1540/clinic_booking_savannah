@@ -3,6 +3,11 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    path("", views.appointment_list_view, name="appointment_list"),
+    path("book/", views.book_appointment_view, name="book_appointment"),
+    path("<int:id>/", views.appointment_detail_view, name="appointment_detail"),
+    path("<int:id>/cancel/", views.cancel_appointment_view, name="cancel_appointment"),
+    path("<int:id>/reschedule/", views.reschedule_appointment_view, name="reschedule_appointment"),
     path("api/", views.AppointmentListView.as_view(), name="appointment-list"),
     path("api/create/", views.AppointmentCreateView.as_view(), name="appointment-create"),
     path(

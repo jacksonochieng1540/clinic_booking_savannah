@@ -22,7 +22,7 @@ from django.urls import include, path
 from django.views.generic import TemplateView
 
 from accounts.views import home_view
-from accounts.views_dashboard import dashboard_view  # ← CHANGE THIS LINE
+from accounts.views_dashboard import dashboard_view
 
 urlpatterns = [
     path("admin/", admin.site.urls),

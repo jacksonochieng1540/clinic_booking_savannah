@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404, render
 from rest_framework import generics, permissions
 
 from core.permissions import IsAdminUser, IsDoctorUser
@@ -45,3 +46,15 @@ class DoctorUpdateView(generics.UpdateAPIView):
         if self.request.user.role == "admin":
             return Doctor.objects.all()
         return Doctor.objects.filter(user=self.request.user)
+
+
+def doctor_list_view(request):
+    """List all doctors for frontend"""
+    doctors = Doctor.objects.filter(is_available=True)
+    return render(request, "doctors/list.html", {"doctors": doctors})
+
+
+def doctor_detail_view(request, id):
+    """Doctor detail page"""
+    doctor = get_object_or_404(Doctor, id=id)
+    return render(request, "doctors/detail.html", {"doctor": doctor})
