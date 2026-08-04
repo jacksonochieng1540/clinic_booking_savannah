@@ -65,8 +65,7 @@ class AccountsTests(TestCase):
         data = self.user_data.copy()
         data["password2"] = "DifferentPass123!"
 
-        response = self.client.post(reverse("api-register"), data, format="json")
-
+        response = self.client.post(reverse("api-register") + "/", data, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("password", str(response.data))
 
