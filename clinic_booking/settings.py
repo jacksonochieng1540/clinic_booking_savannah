@@ -76,6 +76,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -116,22 +117,15 @@ DATABASES = {
 }
 
 
-# # Database
-# if os.getenv('DATABASE_URL'):
-#     DATABASES = {
-#         'default': dj_database_url.config(
-#             default=os.getenv('DATABASE_URL'),
-#             conn_max_age=600
-#         )
-#     }
-# else:
-#     DATABASES = {
-#         'default': {
-#             'ENGINE': 'django.db.backends.sqlite3',
-#             'NAME': BASE_DIR / 'db.sqlite3',
-#         }
-#     }
-
+if os.getenv("DATABASE_URL"):
+    DATABASES = {"default": dj_database_url.config(default=os.getenv("DATABASE_URL"), conn_max_age=600)}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
@@ -269,10 +263,22 @@ USE_X_FORWARDED_PORT = True
 
 # Session and CSRF cookie settings
 CSRF_TRUSTED_ORIGINS = [
-    "https://clinic-booking.onrender.com",
+    "https://clinic-booking-1b3m.onrender.com",
     "http://localhost",
     "http://127.0.0.1",
 ]
+
+# add render urls dynamically
+if os.getenv("RENDER_EXTERNAL_HOSTNAME"):
+    render_host = os.getenv("RENDER_EXTERNAL_HOSTNAME")
+    CSRF_TRUSTED_ORIGINS.append(f"https://{render_host}")
+    if not render_host.endswith(".onrender.com"):
+        CSRF_TRUSTED_ORIGINS.append(f"https://{render_host}.onrender.com")
+
+# Also add any CSRF_TRUSTED_ORIGINS from environment
+if os.getenv("CSRF_TRUSTED_ORIGINS"):
+    extra_origins = [origin.strip() for origin in os.getenv("CSRF_TRUSTED_ORIGINS").split(",") if origin.strip()]
+    CSRF_TRUSTED_ORIGINS.extend(extra_origins)
 
 # Security headers
 if not DEBUG:
