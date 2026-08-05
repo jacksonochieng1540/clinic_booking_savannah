@@ -1,268 +1,415 @@
-
-
----
-
-```markdown
 # Clinic Booking System - Savannah
 
-## Overview
-
-Backend Technical Challenge - Clinic Booking System
-
-A production-ready clinic appointment booking API built with Django REST Framework. Patients can book, cancel, and reschedule appointments with doctors in 30-minute slots.
-
-**Live Demo:** [https://clinic-booking-1b3m.onrender.com](https://clinic-booking-1b3m.onrender.com)
-
-**GitHub Repository:** [https://github.com/jacksonochieng1540/clinic_booking_savannah](https://github.com/jacksonochieng1540/clinic_booking_savannah)
----
-
-## Available Functionalities
-
-### Patient Features
-- ✅ Register and login with email/password
-- ✅ View available 30-minute slots for doctors
-- ✅ Book appointments (validated against working hours)
-- ✅ Cancel appointments with a reason
-- ✅ Reschedule appointments to new slots
-- ✅ View upcoming appointments sorted by date
-- ✅ Prevention of bookings within 1 hour of now (Bonus)
-
-### Doctor Features
-- ✅ View today's appointments
-- ✅ View upcoming appointments
-- ✅ Manage working hours (Admin only)
-
-### Admin Features
-- ✅ Manage doctors and patients
-- ✅ View system statistics
-- ✅ Manage users (activate/deactivate)
+A production-ready **Clinic Appointment Booking System** built with **Django REST Framework**. The system allows patients to book, cancel, and reschedule appointments with doctors in 30-minute time slots while preventing double-booking through database-level validation.
 
 ---
 
-## Tech Stack
+## Live Demo
 
-| Category | Technology |
-|----------|------------|
-| **Backend** | Django 4.2, Django REST Framework |
-| **Database** | PostgreSQL (Production), SQLite (Development) |
-| **Authentication** | JWT (djangorestframework-simplejwt) |
-| **Deployment** | Render |
-| **CI/CD** | GitHub Actions |
-| **Containerization** | Docker, docker-compose |
-| **Testing** | Django Test Framework, Coverage |
-| **Email** | Django Email (Console in dev, SMTP in prod) |
-| **Code Quality** | Black, isort, flake8 |
+**Application:** https://clinic-booking-1b3m.onrender.com
+
+**GitHub Repository:** https://github.com/jacksonochieng1540/clinic_booking_savannah
 
 ---
 
-## Database Schema
+# Tech Stack
 
-```
-┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│      User       │     │     Doctor      │     │    Patient      │
-├─────────────────┤     ├─────────────────┤     ├─────────────────┤
-│ id (PK)         │◄────│ user (FK)       │     │ user (FK)       │
-│ email           │     │ specialty       │◄────│ blood_type      │
-│ first_name      │     │ license_number  │     │ allergies       │
-│ last_name       │     │ years_exp       │     │ medical_history │
-│ phone_number    │     │ consultation_fee│     └─────────────────┘
-│ role            │     │ is_available    │            │
-│ password        │     └─────────────────┘            │
-└─────────────────┘            │                       │
-         │                     │                       │
-         ▼                     ▼                       ▼
-┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│  UserProfile    │     │  WorkingHours   │     │   Appointment   │
-├─────────────────┤     ├─────────────────┤     ├─────────────────┤
-│ user (FK)       │     │ doctor (FK)     │     │ patient (FK)    │
-│ bio             │     │ day_of_week     │     │ doctor (FK)     │
-│ emergency_contact│    │ start_time      │     │ start_time      │
-└─────────────────┘     │ end_time        │     │ end_time        │
-                        │ is_available    │     │ status          │
-                        └─────────────────┘     │ cancellation_reason│
-                                                │ notes           │
-                                                └─────────────────┘
-```
+- Django 4.2
+- Django REST Framework
+- PostgreSQL (Production)
+- SQLite (Development)
+- JWT Authentication
+- Docker
+- GitHub Actions
+- Render
 
 ---
 
-## Tests
+# Getting Started
 
-### Backend Test Coverage - 57 tests
+## Clone the Repository
 
-```bash
-# Run all tests
-python manage.py test
-
-# Run specific app tests
-python manage.py test accounts
-python manage.py test appointments
-
-# Run with coverage
-coverage run manage.py test
-coverage report
-```
-
-**Test Coverage Summary:**
-- ✅ Accounts app tests
-- ✅ Appointments app tests
-- ✅ Doctors app tests
-- ✅ Patients app tests
-- ✅ Schedules app tests
-- ✅ Core app tests
-
----
-
-## Getting Started
-
-### Installation
-
-1. **Clone the repository**
 ```bash
 git clone https://github.com/jacksonochieng1540/clinic_booking_savannah.git
 cd clinic_booking_savannah
 ```
 
-2. **Create virtual environment**
+## Create a Virtual Environment
+
 ```bash
 python -m venv venv
 ```
 
-3. **Activate virtual environment**
+### Windows
 
-For Windows users:
 ```bash
 venv\Scripts\activate
 ```
 
-For Unix based systems:
+### Linux / macOS
+
 ```bash
 source venv/bin/activate
 ```
 
-4. **Install dependencies**
+## Install Dependencies
+
 ```bash
 pip install -r requirements.txt
 ```
 
-5. **Set up environment variables**
-```bash
-cp .env.example .env
-# Edit .env with your settings
-```
+## Apply Database Migrations
 
-6. **Run migrations and seed data**
 ```bash
 python manage.py migrate
-python manage.py createsuperuser      # Create admin user
 ```
 
-7. **Run the server**
+## Create a Superuser
+
+```bash
+python manage.py createsuperuser
+```
+
+## Run the Development Server
+
 ```bash
 python manage.py runserver
 ```
 
-8. **Access the application**
-- Home: http://localhost:8000
-- Admin: http://localhost:8000/admin/
-- API: http://localhost:8000/accounts/api/
+---
 
-### Docker Setup
+# Section 1: System Design
+
+## Scenario
+
+> We run a small clinic with five doctors. Patients should be able to view available appointment slots, book appointments, cancel bookings, and reschedule appointments. Each doctor works fixed 30-minute appointment slots during defined working hours. The system should prevent double-booking and be scalable for future growth.
+
+---
+
+## Architecture
+
+```mermaid
+flowchart TD
+
+A[Client Applications]
+B[Django REST Framework]
+C[Authentication]
+D[Appointments]
+E[Doctors]
+F[Schedules]
+G[Business Logic]
+H[(PostgreSQL)]
+
+A --> B
+B --> C
+B --> D
+B --> E
+B --> F
+
+D --> G
+E --> G
+F --> G
+
+G --> H
+```
+
+---
+
+## Core Models
+
+### User
+
+Stores authentication and user profile information.
+
+### Doctor
+
+Stores doctor profile information including specialty and availability.
+
+### Patient
+
+Stores patient profile information.
+
+### Working Hours
+
+Defines each doctor's available working schedule.
+
+### Appointment
+
+Stores patient bookings including:
+
+- Doctor
+- Patient
+- Start Time
+- End Time
+- Status
+- Cancellation Reason
+
+---
+
+## System Components
+
+### Authentication
+
+- JWT Authentication
+- Registration
+- Login
+- Profile Management
+
+### Doctor Management
+
+- Doctor Profiles
+- Working Hours
+- Availability
+
+### Patient Management
+
+- Patient Profiles
+
+### Scheduling
+
+- Generate available 30-minute slots
+- Validate working hours
+
+### Appointment Management
+
+- Book appointments
+- Cancel appointments
+- Reschedule appointments
+- Prevent double booking
+
+### Notification Service
+
+- Welcome Emails
+- Appointment Confirmation
+- Cancellation Notification
+- Password Reset
+
+---
+
+## Key Design Decisions
+
+| Decision | Choice | Reason |
+|-----------|--------|--------|
+| Framework | Django REST Framework | Mature, reliable and includes ORM and Admin |
+| Database | PostgreSQL | Strong consistency and ACID compliance |
+| Authentication | JWT | Stateless authentication |
+| Concurrency | Database locking (`select_for_update()`) | Prevents double booking |
+| Time Storage | UTC | Standard timezone handling |
+| Slot Generation | Dynamic | Flexible scheduling |
+
+---
+
+## Trade-offs
+
+| Decision | Trade-off |
+|-----------|-----------|
+| Django | Slightly heavier than FastAPI but more feature complete |
+| PostgreSQL | More setup than SQLite but production ready |
+| Database Locking | Slightly slower but guarantees booking consistency |
+| JWT | Requires token refresh but scales well |
+
+---
+
+# Section 2: API Implementation
+
+## API Endpoints
+
+| Method | Endpoint | Description |
+|---------|----------|-------------|
+| POST | `/appointments/api/create/` | Book Appointment |
+| GET | `/schedules/api/doctors/{id}/availability/` | View Available Slots |
+| PATCH | `/appointments/api/{id}/cancel/` | Cancel Appointment |
+| PATCH | `/appointments/api/{id}/reschedule/` | Reschedule Appointment |
+| GET | `/appointments/api/patients/{id}/appointments/` | Upcoming Appointments (Bonus) |
+
+---
+
+## Validation Rules
+
+### Booking
+
+- Appointment must be within doctor's working hours.
+- Appointment must not be in the past.
+- Appointment duration must be 30 minutes.
+- Appointment slot must not already be booked.
+- Booking must be at least one hour in advance.
+
+### Cancellation
+
+- Appointment must exist.
+- Already cancelled appointments cannot be cancelled again.
+
+### Rescheduling
+
+- Appointment must exist.
+- Cancelled appointments cannot be rescheduled.
+- New slot must satisfy all booking validations.
+
+---
+
+## Error Handling
+
+| Error | Status |
+|--------|--------|
+| Invalid Request | 400 Bad Request |
+| Appointment Not Found | 404 Not Found |
+| Slot Already Booked | 409 Conflict |
+| Unauthorized | 401 Unauthorized |
+
+---
+
+## Example Booking Request
+
+```http
+POST /appointments/api/create/
+```
+
+```json
+{
+    "patient_id": 1,
+    "doctor_id": 1,
+    "start_time": "2026-08-10T10:00:00Z"
+}
+```
+
+Example Response
+
+```json
+{
+    "id": 1,
+    "status": "scheduled",
+    "start_time": "2026-08-10T10:00:00Z",
+    "end_time": "2026-08-10T10:30:00Z"
+}
+```
+
+---
+
+## Testing
+
+Run all tests using:
 
 ```bash
-# Build and run with Docker Compose
-docker-compose up --build
+python manage.py test
 ```
+
+The project contains **57 passing tests** covering the booking logic and core application functionality.
 
 ---
 
-## Project Structure
+# Section 3: Deployment & CI/CD
 
-```
+## Deployment
+
+**Live URL**
+
+https://clinic-booking-1b3m.onrender.com
+
+---
+
+## CI/CD
+
+GitHub Actions is used for Continuous Integration and Continuous Deployment.
+
+### Continuous Integration
+
+Runs automatically on Pull Requests.
+
+Pipeline includes:
+
+- Unit Tests
+- Flake8
+- Black
+- isort
+- Security Checks
+
+### Continuous Deployment
+
+Deployment is automatically triggered when changes are merged into the **master** branch.
+
+The deployment pipeline:
+
+1. Runs all tests.
+2. Builds the application.
+3. Applies database migrations.
+4. Deploys to Render.
+
+---
+
+# Section 4: AI Reflection
+
+## 1. How AI Was Used
+
+AI assisted with:
+
+- Designing the application architecture
+- Generating serializer and view templates
+- Improving validation logic
+- Creating GitHub Actions workflows
+- Docker configuration
+- Documentation structure
+
+---
+
+## 2. Example Where AI Improved My Work
+
+I asked:
+
+> *How can I prevent double booking in Django?*
+
+AI suggested using database transactions together with `select_for_update()`.
+
+This approach ensures concurrent booking requests cannot reserve the same appointment slot.
+
+---
+
+## 3. Example Where AI Was Wrong
+
+AI initially suggested loading all appointments into memory before checking availability.
+
+I identified that this approach would not scale well.
+
+Instead, I queried only the required appointments directly from the database using Django ORM filters, making the solution significantly more efficient.
+
+---
+
+## 4. Decisions Made Without AI
+
+- Choosing Django REST Framework because of its maturity, built-in ORM, authentication support, and familiarity.
+- Using SQLite for development and PostgreSQL for production because it provides a simple local setup while ensuring production reliability.
+
+---
+
+# Project Structure
+
+```text
 clinic_booking_savannah/
-├── .github/
-│   └── workflows/
-│       ├── ci.yml          # Continuous Integration
-│       └── deploy.yml      # Continuous Deployment
-├── accounts/               # Authentication app
-│   ├── models.py           # User, UserProfile, UserActivityLog
-│   ├── views.py            # Login, Register, Profile views
-│   ├── views_dashboard.py  # Dashboard views
-│   ├── serializers.py      # Authentication serializers
-│   └── urls.py             # Authentication URLs
-├── appointments/           # Appointments app
-│   ├── models.py           # Appointment model
-│   ├── views.py            # Create, Cancel, Reschedule
-│   ├── serializers.py      # Appointment serializers
-│   └── urls.py             # Appointment URLs
-├── core/                   # Shared utilities
-│   ├── exceptions.py       # Custom exception handler
-│   ├── permissions.py      # Custom permissions
-│   ├── email.py            # Email utilities
-│   └── utils.py            # Helper functions
-├── doctors/                # Doctors app
-│   ├── models.py           # Doctor model
-│   ├── views.py            # Doctor views
-│   └── serializers.py      # Doctor serializers
-├── patients/               # Patients app
-│   ├── models.py           # Patient model
-│   ├── views.py            # Patient views
-│   └── serializers.py      # Patient serializers
-├── schedules/              # Schedules app
-│   ├── models.py           # WorkingHours model
-│   ├── views.py            # Availability views
-│   └── serializers.py      # Schedule serializers
-├── templates/              # Django templates
-├── clinic_booking/         # Project configuration
-│   ├── settings.py         # Main settings
-│   └── urls.py             # Main URLs
-├── Dockerfile              # Docker configuration
-├── docker-compose.yml      # Docker Compose
-├── requirements.txt        # Python dependencies
-├── .env.example            # Environment variables template
-└── README.md               # This file
+│
+├── accounts/
+├── appointments/
+├── doctors/
+├── patients/
+├── schedules/
+├── core/
+├── clinic_booking/
+├── Dockerfile
+├── docker-compose.yml
+├── requirements.txt
+└── README.md
 ```
 
 ---
 
-## API Endpoints Summary
+# Live Links
 
-| Endpoint | Method | Description | Authentication |
-|----------|--------|-------------|----------------|
-| `/accounts/api/register/` | POST | Register new user | None |
-| `/accounts/api/login/` | POST | Login user | None |
-| `/accounts/api/logout/` | POST | Logout user | JWT |
-| `/accounts/api/profile/` | GET | Get user profile | JWT |
-| `/accounts/api/change-password/` | POST | Change password | JWT |
-| `/accounts/api/password-reset/` | POST | Request password reset | None |
-| `/doctors/api/` | GET | List all doctors | None |
-| `/doctors/api/{id}/` | GET | Get doctor details | None |
-| `/schedules/api/doctors/{id}/availability/` | GET | Get available slots | None |
-| `/appointments/api/` | GET | List appointments | JWT |
-| `/appointments/api/create/` | POST | Book appointment | JWT |
-| `/appointments/api/{id}/` | GET | Get appointment details | JWT |
-| `/appointments/api/{id}/cancel/` | PATCH | Cancel appointment | JWT |
-| `/appointments/api/{id}/reschedule/` | PATCH | Reschedule appointment | JWT |
-| `/appointments/api/patients/{id}/appointments/` | GET | Patient's appointments (Bonus) | JWT |
+**Application**
+
+https://clinic-booking-1b3m.onrender.com
+
+**GitHub Repository**
+
+https://github.com/jacksonochieng1540/clinic_booking_savannah
 
 ---
 
-## Contributing
-
-Contributions are welcome! Please follow these steps:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/your-feature`)
-3. Commit your changes (`git commit -m 'Add some feature'`)
-4. Push to the branch (`git push origin feature/your-feature`)
-5. Open a Pull Request
-
----
-
-## License
-
-This project is available as open source under the terms of the [MIT License](LICENSE).
-
----
-
-
+**Backend Developer Take-Home Assessment – Savannah Informatics**
