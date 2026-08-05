@@ -7,8 +7,7 @@ A production-ready clinic appointment booking API built with Django REST Framewo
 
 **Live Demo:** [https://clinic-booking-1b3m.onrender.com](https://clinic-booking-1b3m.onrender.com)
 
-**GitHub Repository:** [https://github.com/jacksonochieng1540](https://github.com/jacksonochieng1540/clinic_booking_savannah)
-
+**GitHub Repository:** [https://github.com/jacksonochieng1540/clinic_booking_savannah](https://github.com/jacksonochieng1540/clinic_booking_savannah)
 ---
 
 ## Available Functionalities
