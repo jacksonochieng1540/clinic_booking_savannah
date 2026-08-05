@@ -6,8 +6,9 @@ services:
     buildCommand: |
       pip install -r requirements.txt
       python manage.py collectstatic --noinput
-    startCommand: |
       python manage.py migrate
+      python manage.py shell -c "from accounts.models import User; import os; email=os.getenv('ADMIN_EMAIL'); password=os.getenv('ADMIN_PASSWORD'); User.objects.create_superuser(email, 'venv', password) if email and password and not User.objects.filter(email=email).exists() else None"
+    startCommand: |
       gunicorn clinic_booking.wsgi:application
     envVars:
       - key: DATABASE_URL
@@ -33,6 +34,10 @@ services:
       - key: EMAIL_HOST_PASSWORD
         sync: false
       - key: DEFAULT_FROM_EMAIL
+        sync: false
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
         sync: false
 
 databases:
